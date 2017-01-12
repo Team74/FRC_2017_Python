@@ -3,9 +3,6 @@ import wpilib
 from xbox import XboxController
 from wpilib.smartdashboard import SmartDashboard
 from components.drive import driveTrain
-from components.armControl import arm
-from components.climberControl import lift
-from components.pixy import Pixy
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
 from wpilib import USBCamera, CameraServer
 
@@ -21,9 +18,6 @@ class MyRobot(wpilib.SampleRobot):
         #self.rmotor = wpilib.CANTalon(0)
 
         self.drive = driveTrain(self)
-        self.robotArm = arm(self)
-        self.climber = lift(self)
-        self.pixy = Pixy()
 
         self.drive.reset()
 
@@ -33,20 +27,12 @@ class MyRobot(wpilib.SampleRobot):
         # Initialize Components functions
         self.components = {
                             'drive' : self.drive,
-                            'arm' : self.robotArm,
-                            'lift' : self.climber,
-                            'pixy' : self.pixy
                             }
 
         # Initialize Smart Dashboard
         self.dash = SmartDashboard()
         self.autonomous_modes = AutonomousModeSelector('autonomous', self.components)
-        self.potentiometer = ('Arm Potentiometer', 0)
-        '''
-        self.dash.putNumber('ControlType', 0)
-        self.dash.putBoolean('Front Switch', 0)
-        self.dash.putBoolean('Back Switch', 0)
-        '''
+
         self.drive.log()
 
 
@@ -64,7 +50,6 @@ class MyRobot(wpilib.SampleRobot):
         while self.isAutonomous() and self.isEnabled():
 
             # Run the actual autonomous mode
-            self.potentiometer = ('Arm Potentiometer', self.robotArm.getPOT())
             self.drive.log()
             self.autonomous_modes.run()
 
@@ -77,21 +62,9 @@ class MyRobot(wpilib.SampleRobot):
         while self.isOperatorControl() and self.isEnabled():
             self.drive.xboxTankDrive(self.controller.getLeftY(), self.controller.getRightY(), self.controller.getLeftBumper(), self.controller.getRightBumper(), self.controller.getLeftTrigger(), self.controller.getRightTrigger())
 
-            self.robotArm.armUpDown(self.controller2.getLeftTriggerRaw(), self.controller2.getRightTriggerRaw(), self.controller2.getButtonA(), rate=0.5)
-            self.robotArm.wheelSpin(self.controller2.getLeftY())
-
-            self.climber.climbUpDown(self.controller2.getLeftBumper(), self.controller2.getRightBumper())
-
             self.drive.log()
 
             wpilib.Timer.delay(CONTROL_LOOP_WAIT_TIME)
-
-            # Send encoder data to the smart dashboard
-            self.dash.putNumber('Arm Potentiometer', self.robotArm.getPOT())
-
-            #self.dash.putBoolean('Back Arm Switch', self.robotArm.getFrontSwitch())
-            #self.dash.putBoolean('Front Arm Switch', self.robotArm.getBackSwitch())
-
 
     def test(self):
         wpilib.LiveWindow.run()
@@ -102,7 +75,6 @@ class MyRobot(wpilib.SampleRobot):
         while self.isTest() and self.isEnabled():
 
             self.drive.xboxTankDrive(self.controller.getLeftY(), self.controller.getRightY(), self.controller.getLeftBumper(), self.controller.getRightBumper(), self.controller.getLeftTrigger(), self.controller.getRightTrigger())
-            self.robotArm.armUpDown(self.controller2.getLeftTriggerRaw(), self.controller2.getRightTriggerRaw())
 
     '''
     def checkPixy():

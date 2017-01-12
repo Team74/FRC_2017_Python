@@ -261,10 +261,6 @@ class driveTrain(Component) :
         self.lbmotor.setEncPosition(0)
 
         if self.CONTROL_TYPE:
-            self.LEFTFRONTCUMULATIVE = 0
-            self.RIGHTFRONTCUMULATIVE = 0
-            self.LEFTBACKCUMULATIVE= 0
-            self.RIGHTBACKCUMULATIVE = 0
             self.pidLeftBack.setSetpoint(0)
             self.pidLeftFront.setSetpoint(0)
             self.pidRightBack.setSetpoint(0)
@@ -309,15 +305,6 @@ class driveTrain(Component) :
                 + self.convertEncoderRaw(abs(self.rbmotor.getPosition()*0.57))
                 + self.convertEncoderRaw(abs(self.lfmotor.getPosition()*0.57))
                 + self.convertEncoderRaw(abs(self.lbmotor.getPosition()*0.57)))/4
-
-        #detirmines how many ticks the encoder has processed
-    def getMotorDistance(self, motor, cumulativeDistance):
-        currentRollovers = 0 #number of times the encoder has gone from 1023 to 0
-        previousValue = cumulativeDistance #variable for comparison
-        currentValue = motor.getEncPosition() #variable for comparison
-        if(previousValue > currentValue): #checks to see if the encoder reset itself from 1023 to 0
-            currentRollovers += 1 #notes the rollover
-        return currentValue + (currentRollovers * 1024) #adds current value to the number of rollovers, each rollover == 1024 ticks
 
         #converts ticks from getMotorDistance into inches
     def convertEncoderRaw(self, selectedEncoderValue):
