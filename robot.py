@@ -21,11 +21,16 @@ class MyRobot(wpilib.SampleRobot):
         self.controller = XboxController(0)
         #self.controller2 = XboxController(1)
         self.gyro = wpilib.ADXRS450_Gyro(0)
-
+        self.gyroInit = False
+        self.i = 1
         self.lfmotor = CANTalon(1)
         self.lbmotor = CANTalon(2)
         self.rfmotor = CANTalon(3)
         self.rbmotor = CANTalon(0)
+        self.rfmotor.enableBrakeMode(True)
+        self.rbmotor.enableBrakeMode(True)
+        self.lfmotor.enableBrakeMode(True)
+        self.lbmotor.enableBrakeMode(True)
 
         self.drive = wpilib.RobotDrive(self.lfmotor, self.lbmotor, self.rfmotor, self.rbmotor)
         #self.drive = RobotDrive()
@@ -68,25 +73,32 @@ class MyRobot(wpilib.SampleRobot):
 
     def operatorControl(self):
         # Resetting encoders
-        wpilib.LiveWindow.run()
         #self.drive.enablePIDs()
-        self.gyro.reset()
-        self.gyro.calibrate()
+
+
 
         while self.isOperatorControl() and self.isEnabled():
+            if(self.gyroInit == False):
+                self.gyro.reset()
+                self.gyro.calibrate()
+                self.gyroInit = True
+            else:
+                wpilib.SmartDashboard.putNumber("GyroAngle",self.gyro.getAngle())
+                self.i +=1
+                wpilib.SmartDashboard.putNumber("test",self.i)
+
+
             self.drive.mecanumDrive_Cartesian(self.controller.getLeftX(), self.controller.getLeftY(), self.controller.getRightX(), 0)
-            wpilib.SmartDashboard.putNumber("GyroAngle",self.gyro.getAngle())
+
             #wpilib.SmartDashboard.putNumber("getAccumulatorValue",self.gyro.spi.getAccumulatorValue())
             #wpilib.SmartDashboard.putNumber("kDegreePerSecond",self.gyro.kDegreePerSecondPerLSB)
             #wpilib.SmartDashboard.putNumber("kSamplePeriod",self.gyro.kSamplePeriod)
             #wpilib.SmartDashboard.putNumber("GyroRate", self.gyro.getRate())
 
-            '''
             if(self.gyro.spi == None):
                 wpilib.SmartDashboard.putNumber("SPIValue", 0)
             else:
                 wpilib.SmartDashboard.putNumber("SPIValue", 1)
-            '''
 
     def test(self):
 
