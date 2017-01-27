@@ -78,14 +78,9 @@ class MyRobot(wpilib.SampleRobot):
 
 
         while self.isOperatorControl() and self.isEnabled():
-            if(self.gyroInit == False):
-                self.gyro.reset()
-                self.gyro.calibrate()
-                self.gyroInit = True
-            else:
-                wpilib.SmartDashboard.putNumber("GyroAngle",self.gyro.getAngle())
-                self.i +=1
-                wpilib.SmartDashboard.putNumber("test",self.i)
+            wpilib.SmartDashboard.putNumber("GyroAngle",self.gyro.getAngle())
+            self.i +=1
+            wpilib.SmartDashboard.putNumber("test",self.i)
 
 
             self.drive.mecanumDrive_Cartesian(self.controller.getLeftX(), self.controller.getLeftY(), self.controller.getRightX(), 0)
