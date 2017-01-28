@@ -1,5 +1,11 @@
-#!/usr/bin/env python3
+"""
+File Author: Will Hescott
+File Creation Date: 1/8/2017
+File Purpose: To create our drive functions
 
+
+"""
+import math
 import wpilib
 from wpilib import RobotDrive
 from wpilib import SPI
@@ -8,6 +14,7 @@ from wpilib.smartdashboard import SmartDashboard
 #from components.drive import driveTrain
 from ctre.cantalon import CANTalon
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
+from components import *
 
 ## from wpilib import USBCamera, CameraServer
 
@@ -19,8 +26,9 @@ class MyRobot(wpilib.SampleRobot):
     def robotInit(self):
 
         self.controller = XboxController(0)
-        #self.controller2 = XboxController(1)
+        self.controller2 = XboxController(1)
         self.gyro = wpilib.ADXRS450_Gyro(0)
+        self.gyro.calibrate()
         self.gyroInit = False
         self.i = 1
         self.lfmotor = CANTalon(1)
@@ -33,7 +41,7 @@ class MyRobot(wpilib.SampleRobot):
         self.lbmotor.enableBrakeMode(True)
 
         self.drive = wpilib.RobotDrive(self.lfmotor, self.lbmotor, self.rfmotor, self.rbmotor)
-        #self.drive = RobotDrive()
+        #self.opControl = operatorControl.opControl()
 
         #self.drive.reset()
 
@@ -42,7 +50,7 @@ class MyRobot(wpilib.SampleRobot):
 
         # Initialize Components functions
         self.components = {
-                            'drive' : self.drive,
+                            #'opControl' : self.opControl
                             }
 
         # Initialize Smart Dashboard
@@ -74,17 +82,13 @@ class MyRobot(wpilib.SampleRobot):
     def operatorControl(self):
         # Resetting encoders
         #self.drive.enablePIDs()
-
-
-
         while self.isOperatorControl() and self.isEnabled():
             wpilib.SmartDashboard.putNumber("GyroAngle",self.gyro.getAngle())
-            self.i +=1
-            wpilib.SmartDashboard.putNumber("test",self.i)
 
-
-            self.drive.mecanumDrive_Cartesian(self.controller.getLeftX(), self.controller.getLeftY(), self.controller.getRightX(), 0)
-
+            self.drive.mecanumDrive_Cartesian(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()), self.gyro.getAngle())
+            if(self.controller.getButtonX() == True):
+                self.gyro.reset()
+            #self.components.opControl.operatorFunctions(self.controller2.getAButton(), self.controller2.getBButton(), self.controller2.getXButton(), self.controller2.getLeftY(), self.controller2.getRightTrigger, self.controller2.getRightBumper)
             #wpilib.SmartDashboard.putNumber("getAccumulatorValue",self.gyro.spi.getAccumulatorValue())
             #wpilib.SmartDashboard.putNumber("kDegreePerSecond",self.gyro.kDegreePerSecondPerLSB)
             #wpilib.SmartDashboard.putNumber("kSamplePeriod",self.gyro.kSamplePeriod)
@@ -94,6 +98,18 @@ class MyRobot(wpilib.SampleRobot):
                 wpilib.SmartDashboard.putNumber("SPIValue", 0)
             else:
                 wpilib.SmartDashboard.putNumber("SPIValue", 1)
+
+    def scaleInput(self, x):
+        negativeOutput = False
+        if(x<0):
+            negativeOutput = True
+        x = abs(x)
+        x = x*math.pow(100,x-1.05)+(0.206*x)
+        if(negativeOutput == True):
+            return x*-1
+        else:
+            return x
+
 
     def test(self):
 

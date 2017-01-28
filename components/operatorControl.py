@@ -1,10 +1,7 @@
 """
-File Author: Will Lowry, Will Hescott
-File Creation Date: 1/28/2015
-File Purpose: To create our drive functions
-
-Transmission gear ratio: 18.74/1
-
+File Author: Will Hescott
+File Creation Date: 1/25/2017
+File Purpose: To create and run our operator functions
 """
 
 import wpilib
@@ -15,7 +12,7 @@ from wpilib.interfaces import Gyro
 from . import Component
 
 
-class driveTrain(Component) :
+class opControl(Component) :
 
     def __init__(self, robot):
         super().__init__()
@@ -43,7 +40,7 @@ class driveTrain(Component) :
         self.shooterFeed = CANTalon(8)
         self.climberMotor = CANTalon(9)
         self.releaseMotor = CANTalon(10) # This may not be nessecary depending upon how we decide to deploy the climber
-
+        self.agitator = CANTalon(11)
 
         self.frontIntake.enableBrakeMode(True)
         self.backIntake.enableBrakeMode(True)
@@ -54,9 +51,11 @@ class driveTrain(Component) :
         self.releaseMotor.enableBrakeMode(True)
 
 
-    def operatorFunctions(self, aButton, bButton, xButton, climberStick, rightTrigger, agitator):
-
+    def operatorFunctions(self, aButton, bButton, xButton, climberStick, rightTrigger,agitatorBumper): #rightBumper= agitator
+            ShooterSpeed = 1
+            ShooterFeedSpeed = .20
             IntakeToggle = False
+            ShooterToggle = True
             if(aButton and IntakeToggle == False):
                 IntakeToggle = True
             elif(aButton and IntakeToggle == True):
@@ -64,5 +63,26 @@ class driveTrain(Component) :
             else:
                 pass
 
-            frontIntake.set(IntakeToggle)
-            backIntake.set(IntakeToggle)
+            self.frontIntake.set(IntakeToggle)
+            self.backIntake.set(IntakeToggle)
+
+            if(bButton)
+                self.frontIntake.set(IntakeToggle*(-1))
+            else:
+                pass
+
+            if(xButton and ShooterToggle == True):
+                ShooterToggle = False
+            elif(xButton and ShooterToggle == False):
+                ShooterToggle = True
+            else:
+                pass
+
+            self.shooterMain.set(ShooterSpeed)
+            self.shooterSecondary.set(ShooterFeedSpeed)
+
+            if(rightTrigger):
+                shooterFeed.set(1)
+
+            self.climberMotor.set(climberStick)
+            self.agitator.set(agitatorBumper)
