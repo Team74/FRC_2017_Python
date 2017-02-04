@@ -11,7 +11,7 @@ from wpilib import RobotDrive
 from wpilib import SPI
 from xbox import XboxController
 from wpilib.smartdashboard import SmartDashboard
-#from components.drive import driveTrain
+from components.operatorControl import opControl
 from ctre.cantalon import CANTalon
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
 from components import *
@@ -19,29 +19,50 @@ from components import *
 ## from wpilib import USBCamera, CameraServer
 
 
-CONTROL_LOOP_WAIT_TIME = 0.025
+controller = XboxController(0)
+controller2 = XboxController(1)
+gyro = wpilib.ADXRS450_Gyro(0)
+gyro.calibrate()
+intakeOn = False
+intakeSpeed = .5
+i = 1
+lfmotor = CANTalon(1)
+lbmotor = CANTalon(2)
+rfmotor = CANTalon(3)
+rbmotor = CANTalon(0)
 
-class MyRobot(wpilib.SampleRobot):
+rfmotor.enableBrakeMode(True)
+rbmotor.enableBrakeMode(True)
+lfmotor.enableBrakeMode(True)
+lbmotor.enableBrakeMode(True)
+
+rfmotor.setInverted(True)
+rbmotor.setInverted(True)
+lfmotor.setInverted(True)
+lbmotor.setInverted(True)
+
+rfmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+rbmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+lfmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+lbmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+
+#setting up the distances per rotation
+lfmotor.configEncoderCodesPerRev(4096)
+rfmotor.configEncoderCodesPerRev(4096)
+lbmotor.configEncoderCodesPerRev(4096)
+rbmotor.configEncoderCodesPerRev(4096)
+
+rfmotor.setPosition(0)
+rbmotor.setPosition(0)
+lfmotor.setPosition(0)
+lbmotor.setPosition(0)
+
+
+class MyRobot(wpilib.SampleRobot, lfmotor, lbmotor, rbmotor, rfmotor, controller, controller2):
 
     def robotInit(self):
-
-        self.controller = XboxController(0)
-        self.controller2 = XboxController(1)
-        self.gyro = wpilib.ADXRS450_Gyro(0)
-        self.gyro.calibrate()
-        self.gyroInit = False
-        self.i = 1
-        self.lfmotor = CANTalon(1)
-        self.lbmotor = CANTalon(2)
-        self.rfmotor = CANTalon(3)
-        self.rbmotor = CANTalon(0)
-        self.rfmotor.enableBrakeMode(True)
-        self.rbmotor.enableBrakeMode(True)
-        self.lfmotor.enableBrakeMode(True)
-        self.lbmotor.enableBrakeMode(True)
-
         self.drive = wpilib.RobotDrive(self.lfmotor, self.lbmotor, self.rfmotor, self.rbmotor)
-        #self.opControl = operatorControl.opControl()
+        self.opControl = opControl(self)
 
         #self.drive.reset()
 
@@ -84,20 +105,21 @@ class MyRobot(wpilib.SampleRobot):
         #self.drive.enablePIDs()
         while self.isOperatorControl() and self.isEnabled():
             wpilib.SmartDashboard.putNumber("GyroAngle",self.gyro.getAngle())
+            wpilib.SmartDashboard.putNumber("Intake Speed",self.intakeSpeed)
+            wpilib.SmartDashboard.putNumber("Left Front Encoder", self.lfmotor.getEncPosition())
+            wpilib.SmartDashboard.putNumber("Right Front Encoder", self.lbmotor.getEncPosition())
+            wpilib.SmartDashboard.putNumber("Left Back Encoder", self.rfmotor.getEncPosition())
+            wpilib.SmartDashboard.putNumber("Right Back Encoder", self.rbmotor.getEncPosition())
 
-            self.drive.mecanumDrive_Cartesian(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()), self.gyro.getAngle())
+            self.drive.mecanumDrive_Cartesian(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()*-1), self.gyro.getAngle())
             if(self.controller.getButtonX() == True):
                 self.gyro.reset()
-            #self.components.opControl.operatorFunctions(self.controller2.getAButton(), self.controller2.getBButton(), self.controller2.getXButton(), self.controller2.getLeftY(), self.controller2.getRightTrigger, self.controller2.getRightBumper)
+
+            self.opControl.operatorFunctions(self.controller2.getButtonA(), self.controller2.getButtonB(), self.controller2.getButtonX(), self.controller2.getLeftY(), self.controller2.getRightTrigger, self.controller2.getRightBumper)
             #wpilib.SmartDashboard.putNumber("getAccumulatorValue",self.gyro.spi.getAccumulatorValue())
             #wpilib.SmartDashboard.putNumber("kDegreePerSecond",self.gyro.kDegreePerSecondPerLSB)
             #wpilib.SmartDashboard.putNumber("kSamplePeriod",self.gyro.kSamplePeriod)
             #wpilib.SmartDashboard.putNumber("GyroRate", self.gyro.getRate())
-
-            if(self.gyro.spi == None):
-                wpilib.SmartDashboard.putNumber("SPIValue", 0)
-            else:
-                wpilib.SmartDashboard.putNumber("SPIValue", 1)
 
     def scaleInput(self, x):
         negativeOutput = False
@@ -121,6 +143,15 @@ class MyRobot(wpilib.SampleRobot):
         while self.isTest() and self.isEnabled():
 
             self.drive.xboxTankDrive(self.controller.getLeftY(), self.controller.getRightY())
+
+'''
+    class autonomus(lfmotor, lbmotor, rbmotor, rfmotor):
+        def _autonInit_()
+
+        def turnAngle()
+            if():
+
+'''
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
