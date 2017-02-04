@@ -1,21 +1,22 @@
 """
-File Author: Will Lowry
+File Author: Will Hescott
 File Creation Date: 2/23/2016
 File Purpose: To create a skeleton autonomous mode testing the low bar
 """
 
 from robotpy_ext.autonomous import StatefulAutonomous, state, timed_state
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
+#from components.drive import driveTrain
 from wpilib import SendableChooser
 #from components.armControl import arm
 
 
 class autonomousModeTestingLowBar(StatefulAutonomous):
 
-    MODE_NAME = 'Straight'
+    MODE_NAME = 'LeftTurn'
     DEFAULT = False
-    DRIVE_DISTANCE = 237
-
+    DRIVE_DISTANCE = 60
+    #drive = driveTrain
     chooser = SendableChooser()
     default_modes = []
     iCount = 0
@@ -32,24 +33,40 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
     def drive_stop(self) :
         self.drive.reset()
         self.drive.autonTankDrive(0, 0)
-    '''
+
     @state()
-    def move_arm(self):
-        while(self.arm.getPOT() >= 25):
-            self.arm.armAuto(0,1,25,rate=0.5)
+    def turnLeft(self):
+        self.drive.turnAngle(-90)
+        self.next_state('drive_forward2')
 
-        self.arm.armAuto(0,0,25)
-
-        self.next_state('drive_forward')
-    '''
     @state()
     def drive_forward(self) :
-        if self.drive.getAutonDistance() <= self.DRIVE_DISTANCE :
+        if self.drive.getDistance() < 61 :
             self.drive.autonTankDrive(0.5, 0.5)
         else :
             self.drive.reset()
-            self.next_state('done')
+            self.next_state('turnLeft')
 
+    @state()
+    def drive_forward2(self) :
+        if self.drive.getDistance() < 92 :
+            self.drive.autonTankDrive(0.5, 0.5)
+        else :
+            self.drive.reset()
+            self.next_state('turnLeft2')
+
+    @state()
+    def turnLeft(self):
+        self.drive.turnAngle(5)
+        self.next_state('drive_forward3')
+
+        @state()
+        def drive_forward3(self) :
+            if self.drive.getDistance() < 20 :
+                self.drive.autonTankDrive(0.5, 0.5)
+            else :
+                self.drive.reset()
+                self.next_state('done')
     @state()
     def done(self) :
         self.drive.autonTankDrive(0, 0)
