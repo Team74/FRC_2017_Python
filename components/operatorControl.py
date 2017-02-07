@@ -17,11 +17,15 @@ class opControl(Component):
         super().__init__()
 
         self.wait = 0
+        self.wait2 = 0
         self.ShooterSpeed = 1
         self.ShooterFeedSpeed = .20
         self.intakeToggle = False
         self.shooterToggle = True
+        self.lights = True
 
+        self.flash1 = digitalOutput(0)
+        self.flash2 = digitalOutput(1)
         self.frontIntake = Spark(4)
         self.backIntake = Spark(5)
         self.shooterMain = Spark(6)
@@ -39,7 +43,7 @@ class opControl(Component):
         self.climberMotor.enableBrakeMode(True)
         self.releaseMotor.enableBrakeMode(True)
         '''
-    def operatorFunctions(self, aButton, bButton, xButton, climberStick, rightTrigger,agitatorBumper): #rightBumper= agitator
+    def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,agitatorBumper): #rightBumper= agitator
         if(self.wait>0):
             self.wait-=1
         elif(self.wait<=0):
@@ -57,6 +61,20 @@ class opControl(Component):
         else:
                 self.frontIntake.set(0)
                 self.backIntake.set(0)
+        if(self.wait2>0):
+            self.wait2-=1
+        elif(self.wait2<=0):
+            if(yButton and self.lights == False):
+                self.light.set(True)
+                self.light2.set(True)
+                self.lights = True
+            elif(yButton and self.lights == True):
+                self.light.set(False)
+                self.light2.set(False)
+                self.lights = False
+            else:
+                pass
+
 
         if(bButton):
             self.frontIntake.set(self.intakeToggle*(-1))

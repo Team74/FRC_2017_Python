@@ -36,14 +36,21 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
 
     @state()
     def turnLeft(self):
-        self.drive.turnAngle(-90)
-        self.next_state('drive_forward2')
+        if(self.drive.turnAngle(-90)):
+            self.next_state('drive_forward2')
+
+    @state()
+    def turnLeft2(self):
+        if(self.drive.turnAngle(-40)):
+            self.next_state('drive_forward3')
 
     @state()
     def drive_forward(self) :
+        print ('driveForeward1')
         if self.drive.getDistance() < 61 :
             self.drive.autonTankDrive(0.5, 0.5)
         else :
+            print ('driveForewardPassed')
             self.drive.reset()
             self.next_state('turnLeft')
 
@@ -56,17 +63,12 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
             self.next_state('turnLeft2')
 
     @state()
-    def turnLeft(self):
-        self.drive.turnAngle(5)
-        self.next_state('drive_forward3')
-
-        @state()
-        def drive_forward3(self) :
-            if self.drive.getDistance() < 20 :
-                self.drive.autonTankDrive(0.5, 0.5)
-            else :
-                self.drive.reset()
-                self.next_state('done')
+    def drive_forward3(self) :
+        if self.drive.getDistance() < 20:
+            self.drive.autonTankDrive(0.5, 0.5)
+        else :
+            self.drive.reset()
+            self.next_state('done')
     @state()
     def done(self) :
         self.drive.autonTankDrive(0, 0)

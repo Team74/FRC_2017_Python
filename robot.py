@@ -64,7 +64,7 @@ class MyRobot(wpilib.SampleRobot):
             wpilib.SmartDashboard.putNumber("GyroAngle",self.drive.getGyroAngle())
             wpilib.SmartDashboard.putNumber("Intake Speed",self.drive.getIntakeSpeed())
             wpilib.SmartDashboard.putNumber("Distance", self.drive.getDistance())
-            self.drive.drive(self.scaleInput(self.controller.getLeftX()*-1), self.scaleInput(self.controller.getLeftY()*-1),self.scaleInput(self.controller.getRightX()*-1))
+            self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()*-1))
             if(self.controller.getButtonX() == True):
                 self.drive.zeroGyro()
 

@@ -68,17 +68,25 @@ class driveTrain(Component):
         self.rbmotor.setEncPosition(0)
         self.lfmotor.setEncPosition(0)
         self.lbmotor.setEncPosition(0)
-    def turn_angle(self, degrees):
-        while(self.gyro.getAngle != degrees):
-            if(self.gyro.getAngle < degrees):
-                self.autonTankDrive(0.4, -0.4)
-            elif(self.gyro.getAngle > degrees):
-                self.autonTankDrive(-0.4, 0.4)
+        self.zeroGyro()
+
+    def turnAngle(self, degrees):
+        print ('turnAngle1')
+        if(self.gyro.getAngle() >= degrees+1):
+            self.autonTankDrive(0.2, -0.2)
+            print(self.gyro.getAngle())
+            print('turningRight')
+        elif(self.gyro.getAngle() <= degrees-1):
+            self.autonTankDrive(-0.2, 0.2)
+            print('turningLeft')
+            print(self.gyro.getAngle())
+        else:
+            return True
+        return False
     def drive(self, leftX, leftY, rightX):
-            self.robotDrive.mecanumDrive_Cartesian(leftX, leftY, rightX, self.gyro.getAngle())
+            self.robotDrive.mecanumDrive_Cartesian(leftX*-1, leftY*-1, rightX, self.gyro.getAngle())
     def zeroGyro(self):
         self.gyro.reset()
-
     def enablePIDs(self):
         '''
         #No longer required because we swapped from analog encoders to magnetic encoders
@@ -105,7 +113,6 @@ class driveTrain(Component):
                 + self.convertEncoderRaw(abs(self.rbmotor.getPosition()))
                 + self.convertEncoderRaw(abs(self.lfmotor.getPosition()))
                 + self.convertEncoderRaw(abs(self.lbmotor.getPosition())))/4
-
         #detirmines how many ticks the encoder has processed
         #converts ticks from getMotorDistance into inches
     def convertEncoderRaw(self, selectedEncoderValue):
