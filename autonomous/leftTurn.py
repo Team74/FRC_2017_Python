@@ -1,7 +1,11 @@
 """
 File Author: Will Hescott
-File Creation Date: 2/23/2016
-File Purpose: To create a skeleton autonomous mode testing the low bar
+File Creation Date: 2/03/2017
+File Purpose:Creating a proof of concept autonomous program that uses
+multiple features available to practice implementation and work our kinks.
+This auton begins in front of the gear loading statsion, drives forwards,
+turns 90 degrees to the left, then proceeds forward before turning again and
+driving up to the 'key' line.
 """
 
 from robotpy_ext.autonomous import StatefulAutonomous, state, timed_state

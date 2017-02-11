@@ -60,15 +60,17 @@ class MyRobot(wpilib.SampleRobot):
     def operatorControl(self):
         # Resetting encoders
         #self.drive.enablePIDs()
+        self.opControl.setSpeed()
         while self.isOperatorControl() and self.isEnabled():
             wpilib.SmartDashboard.putNumber("GyroAngle",self.drive.getGyroAngle())
             wpilib.SmartDashboard.putNumber("Intake Speed",self.drive.getIntakeSpeed())
             wpilib.SmartDashboard.putNumber("Distance", self.drive.getDistance())
-            self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()*-1))
+            wpilib.SmartDashboard.putNumber("ShooterSpeed", self.opControl.getSpeed())
+            self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))
             if(self.controller.getButtonX() == True):
                 self.drive.zeroGyro()
 
-            self.opControl.operatorFunctions(self.controller2.getButtonA(), self.controller2.getButtonB(), self.controller2.getButtonX(), self.controller2.getLeftY(), self.controller2.getRightTrigger, self.controller2.getRightBumper)
+            self.opControl.operatorFunctions(self.controller2.getButtonA(), self.controller2.getButtonB(), self.controller2.getButtonX(), self.controller2.getButtonY(), self.controller2.getLeftY(), self.controller2.getRightTrigger(), self.controller2.getRightBumper(), self.controller2.getLeftTrigger())
             #wpilib.SmartDashboard.putNumber("getAccumulatorValue",self.gyro.spi.getAccumulatorValue())
             #wpilib.SmartDashboard.putNumber("kDegreePerSecond",self.gyro.kDegreePerSecondPerLSB)
             #wpilib.SmartDashboard.putNumber("kSamplePeriod",self.gyro.kSamplePeriod)
