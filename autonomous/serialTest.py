@@ -10,6 +10,8 @@ from robotpy_ext.autonomous.selector import AutonomousModeSelector
 from wpilib import SendableChooser
 #from components.armControl import arm
 
+from tthhiinnggyy import Tthhinnggyy
+
 
 class autonomousModeSerialTest(StatefulAutonomous):
 
@@ -28,8 +30,21 @@ class autonomousModeSerialTest(StatefulAutonomous):
 # A positive motor value for the WHEEL makes them take in the ball
 
 # initially stopping the bot using a timed state
+
     @state(first=True)
-    def test_serial(self) :
+    def test_start(self) :
         self.drive.reset()
         self.drive.autonTankDrive(0, 0)
-        print("Test auton")
+        self.thng = Tthhinnggyy()
+        self.next_state('test_serial')
+
+    @state()
+    def test_serial(self):
+        self.thng.receive()
+        if thng.centerSide() and thng.centerLine() :	#this works because of short-circuiting
+            print("hooboyshoot")
+            self.next_state('test_end')
+
+    @state()
+    def test_end(self):
+        pass
