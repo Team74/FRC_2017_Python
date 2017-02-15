@@ -43,15 +43,15 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
             self.next_state('strafeRight')
 
     @timed_state(first=False, duration=1, next_state='strafeLeft')
-    def strafeRight(self)
+    def strafeRight(self):
         self.drive.drive(0, 1, 0)
 
     @timed_state(first=False, duration=1, next_state='getInRange')
-    def strafeLeft(self)
+    def strafeLeft(self):
         self.drive.drive(0, -1, 0)
 
     @state()
-    def getInRange(self)
+    def getInRange(self):
         if self.drive.getDistance < 35:
             self.drive.autonTankDrive(.5, .5)
         else:
