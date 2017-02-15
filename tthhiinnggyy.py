@@ -20,10 +20,10 @@ MUZZLE_VELOCITY = 30	#meters/second
 COMPLETELY_ARBITRARY_CONSTANT = 1
 
 class Tthhinnggyy:
-	mid_x = None
-	mid_y = None
-	theta = None
-	distance = None
+	mid_x = 0
+	mid_y = 0
+	theta = 0
+	distance = 0
 	ser = None
 
 	def __init__(self):
@@ -34,6 +34,7 @@ class Tthhinnggyy:
 
 	def receive(self):
 		self.ser.write("boom ya got waffles\n".encode())
+		print("did write\n")
 		ans = self.ser.readline()
 		if ans:
 			ans = self.uncode(ans.decode())
@@ -41,7 +42,7 @@ class Tthhinnggyy:
 			self.mid_y = float(ans[1])
 			self.theta = float(ans[2])
 			self.distance = float(ans[3])
-		#print(str(self.mid_x) + "\t" + str(self.mid_y) + "\t" + str(self.theta) + "\t" + str(self.distance))
+			print(str(self.mid_x) + "\t" + str(self.mid_y) + "\t" + str(self.theta) + "\t" + str(self.distance))
 
 	def uncode(self, string):
 		stuff = []
