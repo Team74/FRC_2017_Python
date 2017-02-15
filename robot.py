@@ -17,6 +17,8 @@ from ctre.cantalon import CANTalon
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
 from components import *
 
+from tthhiinnggyy import Tthhinnggyy
+
 ## from wpilib import USBCamera, CameraServer
 
 class MyRobot(wpilib.SampleRobot):
@@ -52,10 +54,14 @@ class MyRobot(wpilib.SampleRobot):
     def autonomous(self):
 
         self.drive.reset()
+        self.thng = Tthhinnggyy()
         #self.drive.enablePIDs()
 
         while self.isAutonomous() and self.isEnabled():
-            self.autonomous_modes.run()
+            #self.autonomous_modes.run()
+            self.thng.receive()
+            if thng.centerSide() and thng.centerLine() :	#this works because of short-circuiting
+                print("hooboyshoot")
 
     def operatorControl(self):
         # Resetting encoders
