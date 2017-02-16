@@ -75,8 +75,8 @@ class Tthhinnggyy:
 		return True
 
 	def centerLine(self):
-		if(abs(distance - REF_DIST) > DDZ_MOV):	#meters, arbitrary deadzone value
-			spd = copysign(0.1, distance)#max(MIN_MOV_SPD, abs(distance))*math.copysign(1.0, distance)
+		if(abs(self.distance - REF_DIST) > DDZ_MOV):	#meters, arbitrary deadzone value
+			spd = math.copysign(0.1, self.distance - REF_DIST)#max(MIN_MOV_SPD, abs(distance))*math.copysign(1.0, distance)
 			self.autonTankDrive(spd,spd)
 			return False
 		return True
