@@ -4,16 +4,16 @@ import math
 import serial
 from time import sleep
 
-DDZ_ROT = 4#0.06
-MIN_ROT_SPD = 0.01
-MAX_ROT_SPD = 0.2
+DDZ_ROT = 3#0.06
+#MIN_ROT_SPD = 0.01
+MAX_ROT_SPD = 0.1
 
 DDZ_MOV = 0.1
 MIN_MOV_SPD = 0.05
 
-REF_THETA = 40
-REF_TOW_H = 1.9
-REF_CAM_H = 0
+REF_THETA = 45
+REF_TOW_H = 2.38
+REF_CAM_H = .8
 REF_DIST = (REF_TOW_H - REF_CAM_H) / math.tan(REF_THETA)	
 
 MUZZLE_VELOCITY = 30	#meters/second
@@ -25,16 +25,17 @@ class Tthhinnggyy:
 	theta = 0
 	distance = 0
 	ser = None
+	drive = None
 
-	def __init__(self):
+	def __init__(self, drive):
 		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
-
+		self.drive = drive
 	def autonTankDrive(self, l, r):
-		print("turn\t" + str(l) + "\t" + str(r))
+		#print("turn\t" + str(l) + "\t" + str(r))
+		self.drive.autonTankDrive(l, r)
 
 	def receive(self):
 		self.ser.write("boom ya got waffles\n".encode())
-		print("did write\n")
 		ans = self.ser.readline()
 		if ans:
 			ans = self.uncode(ans.decode())
@@ -42,7 +43,7 @@ class Tthhinnggyy:
 			self.mid_y = float(ans[1])
 			self.theta = float(ans[2])
 			self.distance = float(ans[3])
-			print(str(self.mid_x) + "\t" + str(self.mid_y) + "\t" + str(self.theta) + "\t" + str(self.distance))
+			#print(str(self.mid_x) + "\t" + str(self.mid_y) + "\t" + str(self.theta) + "\t" + str(self.distance))
 
 	def uncode(self, string):
 		stuff = []
@@ -69,7 +70,7 @@ class Tthhinnggyy:
 
 	def centerSide(self):
 		if(abs(self.theta - REF_THETA) > DDZ_ROT):	#radians, arbitrary deadzone value
-			spd = math.copysign(0.2, self.theta)	#again arbitrary numbers
+			spd = math.copysign(MAX_ROT_SPD, self.theta)	#again arbitrary numbers
 			self.autonTankDrive(spd, -spd)
 			return False
 		return True

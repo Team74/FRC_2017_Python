@@ -54,13 +54,13 @@ class MyRobot(wpilib.SampleRobot):
     def autonomous(self):
 
         self.drive.reset()
-        self.thng = Tthhinnggyy()
+        self.thng = Tthhinnggyy(self.drive)
         #self.drive.enablePIDs()
 
         while self.isAutonomous() and self.isEnabled():
             #self.autonomous_modes.run()
             self.thng.receive()
-            if self.thng.centerSide() and self.thng.centerLine() :	#this works because of short-circuiting
+            if self.thng.centerSide():# and self.thng.centerLine() :	#this works because of short-circuiting
                 print("hooboyshoot")
 
     def operatorControl(self):
