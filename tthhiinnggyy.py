@@ -43,7 +43,7 @@ class Tthhinnggyy:
 			self.mid_y = float(ans[1])
 			self.theta = float(ans[2])
 			self.distance = float(ans[3])
-			#print(str(self.mid_x) + "\t" + str(self.mid_y) + "\t" + str(self.theta) + "\t" + str(self.distance))
+			print(str(self.mid_x)[0:5] + "\t" + str(self.mid_y)[0:5] + "\t" + str(self.theta)[0:5] + "\t" + str(self.distance)[0:5])
 
 	def uncode(self, string):
 		stuff = []
@@ -73,6 +73,7 @@ class Tthhinnggyy:
 			spd = math.copysign(MAX_ROT_SPD, self.theta)	#again arbitrary numbers
 			self.autonTankDrive(spd, -spd)
 			return False
+		self.autonTankDrive(0, 0)
 		return True
 
 	def centerLine(self):
