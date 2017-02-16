@@ -4,9 +4,9 @@ import math
 import serial
 from time import sleep
 
-DDZ_ROT = 3#0.06
-#MIN_ROT_SPD = 0.01
-MAX_ROT_SPD = 0.1
+DDZ_ROT = 0.05
+MIN_ROT_SPD = 0.04
+MAX_ROT_SPD = 0.3
 
 DDZ_MOV = 0.1
 MIN_MOV_SPD = 0.05
@@ -43,7 +43,7 @@ class Tthhinnggyy:
 			self.mid_y = float(ans[1])
 			self.theta = float(ans[2])
 			self.distance = float(ans[3])
-			print(str(self.mid_x)[0:5] + "\t" + str(self.mid_y)[0:5] + "\t" + str(self.theta)[0:5] + "\t" + str(self.distance)[0:5])
+			print(str(self.distance)[0:5])
 
 	def uncode(self, string):
 		stuff = []
@@ -69,8 +69,8 @@ class Tthhinnggyy:
 		return stuff
 
 	def centerSide(self):
-		if(abs(self.theta - REF_THETA) > DDZ_ROT):	#radians, arbitrary deadzone value
-			spd = math.copysign(MAX_ROT_SPD, self.theta)	#again arbitrary numbers
+		if(abs(mid_x) > DDZ_ROT):	#radians, arbitrary deadzone value
+			spd = math.copysign(min(max(MIN_ROT_SPD, abs(self.mid_x)), MAX_ROT_SPD), self.mid_x)	#again arbitrary numbers
 			self.autonTankDrive(spd, -spd)
 			return False
 		self.autonTankDrive(0, 0)
