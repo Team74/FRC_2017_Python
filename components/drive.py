@@ -5,7 +5,7 @@ File Purpose: To create and run our drive functions
 """
 
 import wpilib
-from wpilib import Encoder, Timer, RobotDrive, Spark, DigitalOutput
+from wpilib import Encoder, Timer, RobotDrive, Spark
 from ctre.cantalon import CANTalon
 from wpilib.interfaces import Gyro
 from . import Component
@@ -25,16 +25,15 @@ class driveTrain(Component):
         self.lbmotor = CANTalon(2)
         self.rfmotor = CANTalon(3)
         self.rbmotor = CANTalon(0)
-
         self.robotDrive = RobotDrive(self.lfmotor, self.lbmotor, self.rfmotor, self.rbmotor)
         self.rfmotor.enableBrakeMode(True)
         self.rbmotor.enableBrakeMode(True)
         self.lfmotor.enableBrakeMode(True)
         self.lbmotor.enableBrakeMode(True)
-        #self.rfmotor.setInverted(True)
-        #self.lfmotor.setInverted(False)
-        #self.rbmotor.setInverted(True)
-        #self.lbmotor.setInverted(False)
+        self.rfmotor.setInverted(True)
+        self.lfmotor.setInverted(True)
+        self.rbmotor.setInverted(True)
+        self.lbmotor.setInverted(True)
         self.rfmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
         self.rbmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
         self.lfmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
@@ -72,23 +71,22 @@ class driveTrain(Component):
         self.zeroGyro()
 
     def turnAngle(self, degrees):
-
-        if(self.gyro.getAngle() > degrees+1):
-            self.autonTankDrive(-0.2, 0.2)
-            print(self.gyro.getAngle())
-        elif(self.gyro.getAngle() < degrees-1):
+        print ('turnAngle1')
+        if(self.gyro.getAngle() >= degrees+1):
             self.autonTankDrive(0.2, -0.2)
+            print(self.gyro.getAngle())
+            print('turningRight')
+        elif(self.gyro.getAngle() <= degrees-1):
+            self.autonTankDrive(-0.2, 0.2)
+            print('turningLeft')
             print(self.gyro.getAngle())
         else:
             return True
         return False
-
     def drive(self, leftX, leftY, rightX):
-            self.robotDrive.mecanumDrive_Cartesian(leftX*.75, leftY*.75, rightX*.75, self.gyro.getAngle())
-
+            self.robotDrive.mecanumDrive_Cartesian(leftX*-1, leftY*-1, rightX, self.gyro.getAngle())
     def zeroGyro(self):
         self.gyro.reset()
-
     def enablePIDs(self):
         '''
         #No longer required because we swapped from analog encoders to magnetic encoders
@@ -97,7 +95,6 @@ class driveTrain(Component):
         self.pidRightFront.enable()
         self.pidRightBack.enable()
         '''
-
     # Disable PID Controllers
     def disablePIDs(self):
         '''
@@ -107,24 +104,16 @@ class driveTrain(Component):
         self.pidRightFront.disable()
         self.pidRightBack.disable()
         '''
-
     def getGyroAngle(self):
         return self.gyro.getAngle()
-
     def getIntakeSpeed(self):
         return self.intakeSpeed
-
     def getDistance(self):
-        wpilib.SmartDashboard.putNumber("rf",self.rfmotor.getPosition())
-        wpilib.SmartDashboard.putNumber("rb",self.rbmotor.getPosition())
-        wpilib.SmartDashboard.putNumber("lf",self.lfmotor.getPosition()*-1)
-        wpilib.SmartDashboard.putNumber("lb",self.lbmotor.getPosition()*-1)
-        return (self.convertEncoderRaw(self.rfmotor.getPosition())
-                + self.convertEncoderRaw(self.rbmotor.getPosition())
-                + self.convertEncoderRaw(self.lfmotor.getPosition()*-1)
-                + self.convertEncoderRaw(self.lbmotor.getPosition()*-1))/4
+        return (self.convertEncoderRaw(abs(self.rfmotor.getPosition()))
+                + self.convertEncoderRaw(abs(self.rbmotor.getPosition()))
+                + self.convertEncoderRaw(abs(self.lfmotor.getPosition()))
+                + self.convertEncoderRaw(abs(self.lbmotor.getPosition())))/4
         #detirmines how many ticks the encoder has processed
         #converts ticks from getMotorDistance into inches
-
     def convertEncoderRaw(self, selectedEncoderValue):
         return selectedEncoderValue * self.INCHES_PER_REV
