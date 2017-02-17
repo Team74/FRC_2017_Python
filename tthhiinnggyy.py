@@ -14,36 +14,55 @@ MIN_MOV_SPD = 0.05
 REF_THETA = 45
 REF_TOW_H = 2.38
 REF_CAM_H = .8
-REF_DIST = (REF_TOW_H - REF_CAM_H) / math.tan(REF_THETA)	
+REF_DIST = (REF_TOW_H - REF_CAM_H) / math.tan(REF_THETA)
 
 MUZZLE_VELOCITY = 30	#meters/second
 COMPLETELY_ARBITRARY_CONSTANT = 1
 
 class Tthhinnggyy:
-	mid_x = 0
-	mid_y = 0
-	theta = 0
-	distance = 0
+	old_x = 0
+	mid_x = None
+	mid_y = None
+	theta = None
+	distance = None
 	ser = None
 	drive = None
+	y = 50
 
 	def __init__(self, drive):
 		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
 		self.drive = drive
 	def autonTankDrive(self, l, r):
 		#print("turn\t" + str(l) + "\t" + str(r))
-		self.drive.autonTankDrive(l, r)
+		if self.y >= 5:
+			self.drive.autonTankDrive(l, r)
+			self.y = 0
+		else:
+			self.y += 1
 
 	def receive(self):
 		self.ser.write("boom ya got waffles\n".encode())
 		ans = self.ser.readline()
 		if ans:
 			ans = self.uncode(ans.decode())
-			self.mid_x = float(ans[0])
-			self.mid_y = float(ans[1])
-			self.theta = float(ans[2])
-			self.distance = float(ans[3])
-			print(str(self.distance)[0:5])
+			if self.old_x != float(ans[0]):
+				self.old_x = self.mid_x
+				self.mid_x = float(ans[0])
+				self.mid_y = float(ans[1])
+				self.theta = float(ans[2])
+				self.distance = float(ans[3])
+				print(str(self.mid_x))
+				return
+			else:
+				print("no new")
+		else:
+			print("no response")
+		self.mid_x = None
+		self.old_x = None
+		self.mid_y = None
+		self.theta = None
+		self.distance = None
+		#print("skip")
 
 	def uncode(self, string):
 		stuff = []
@@ -69,8 +88,11 @@ class Tthhinnggyy:
 		return stuff
 
 	def centerSide(self):
-		if(abs(mid_x) > DDZ_ROT):	#radians, arbitrary deadzone value
-			spd = math.copysign(min(max(MIN_ROT_SPD, abs(self.mid_x)), MAX_ROT_SPD), self.mid_x)	#again arbitrary numbers
+		if(self.mid_x == None):
+			self.autonTankDrive(0, 0)
+			return False
+		elif(abs(self.mid_x) > DDZ_ROT):	#radians, arbitrary deadzone value
+			spd = math.copysign(0.2, self.mid_x)#min(max(MIN_ROT_SPD, abs(self.mid_x)), MAX_ROT_SPD), self.mid_x)	#again arbitrary numbers
 			self.autonTankDrive(spd, -spd)
 			return False
 		self.autonTankDrive(0, 0)
@@ -98,4 +120,3 @@ thng.receive()
 if thng.centerSide() and thng.centerLine() :	#this works because of short-circuiting
 	HooBoyShoot()
 '''
-

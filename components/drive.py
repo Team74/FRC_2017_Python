@@ -9,6 +9,8 @@ from wpilib import Encoder, Timer, RobotDrive, Spark, DigitalOutput
 from ctre.cantalon import CANTalon
 from wpilib.interfaces import Gyro
 from . import Component
+from tthhiinnggyy import Tthhinnggyy
+
 
 class driveTrain(Component):
 
@@ -47,6 +49,9 @@ class driveTrain(Component):
         self.lfmotor.setPosition(0)
         self.rbmotor.setPosition(0)
         self.lbmotor.setPosition(0)
+
+        self.thng = Tthhinnggyy(self.drive)
+
     def drive_forward(self, speed) :
         self.drive.tankDrive(speed, speed, True)
     def autonTankDrive(self, leftSpeed, rightSpeed):
@@ -82,6 +87,11 @@ class driveTrain(Component):
         else:
             return True
         return False
+
+    def visionLineUp(self):
+        self.thng.receive()
+        if self.thng.centerSide():#and self.thng.centerLine() :	#this works because of short-circuiting
+            print("hooboyshoot")
 
     def drive(self, leftX, leftY, rightX):
             self.robotDrive.mecanumDrive_Cartesian(leftX*.75, leftY*.75, rightX*.75, self.gyro.getAngle())
