@@ -8,14 +8,13 @@ File Purpose: To create our drive functions
 import math
 import wpilib
 from wpilib import RobotDrive
-from wpilib import SPI
 from xbox import XboxController
 from wpilib.smartdashboard import SmartDashboard
 from components.operatorControl import opControl
 from components.drive import driveTrain
 from ctre.cantalon import CANTalon
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
-from components import *
+
 ## from wpilib import USBCamera, CameraServer
 
 
@@ -23,17 +22,16 @@ from components import *
 class MyRobot(wpilib.SampleRobot):
 
     def robotInit(self):
-        self.controller = XboxController(0)
+        self.controller = XboxController(0)#logitech controllers
         self.controller2 = XboxController(1)
-
-        self.drive = driveTrain(self)
+        self.drive = driveTrain(self)#initialising a drivetrain objet
         self.drive.reset()
-        self.opControl = opControl(self)
-        #self.drive.reset()
+        self.opControl = opControl(self)#initialising a operator control object
         self.dashTimer = wpilib.Timer()     # Timer for SmartDashboard updating
         self.dashTimer.start()
 
         # Initialize Components functions
+        # components are referenced from auton to avoid the trouble of running multiple inits of the same objects
         self.components = {
                             'opControl' : self.opControl,
                             'drive' : self.drive
@@ -58,26 +56,23 @@ class MyRobot(wpilib.SampleRobot):
 
 
     def operatorControl(self):
-
         #self.opControl.setSpeed() #used for manually setting motor speeds for testing, disable for teleop
         while self.isOperatorControl() and self.isEnabled():
-            wpilib.SmartDashboard.putNumber("GyroAngle",self.drive.getGyroAngle())
-            wpilib.SmartDashboard.putNumber("Intake Speed",self.drive.getIntakeSpeed())
+            wpilib.SmartDashboard.putNumber("GyroAngle",self.drive.getGyroAngle())#Putting important information onto the dashboard for reference in teleop
             wpilib.SmartDashboard.putNumber("Distance", self.drive.getDistance())
-            #wpilib.SmartDashboard.putNumber("ShooterSpeed", self.opControl.getSpeed())
-            self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))
-            if(self.controller.getButtonX()):
+
+            self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
+            #[cont.] the drive functions file. It also wraps the values with the scaleInput method which puts the input on an exponential curve, which gives the driver both fine-tuned control and power if you need it
+            if(self.controller.getButtonX() == True):#This just allows the driver to zero the gyro out. It drifts between 30 and 60 degrees on every 360 degree rotation. It's  a hardare problem so this is the best we can  do
                 self.drive.zeroGyro()
 
             self.opControl.operatorFunctions(self.controller2.getButtonA(), self.controller2.getButtonB(), self.controller2.getButtonX(), self.controller2.getButtonY(), self.controller2.getLeftY(), self.controller2.getRightTrigger(), self.controller2.getRightBumper(), self.controller2.getLeftTrigger())
-            #wpilib.SmartDashboard.putNumber("getAccumulatorValue",self.gyro.spi.getAccumulatorValue())
-            #wpilib.SmartDashboard.putNumber("kDegreePerSecond",self.gyro.kDegreePerSecondPerLSB)
-            #wpilib.SmartDashboard.putNumber("kSamplePeriod",self.gyro.kSamplePeriod)
-            #wpilib.SmartDashboard.putNumber("GyroRate", self.gyro.getRate())
+            #passes controller2 values to the operatorControl file
 
-    def scaleInput(self, x):
+    def scaleInput(self, x):#Wrapper method that puts all 0-1 input on an exponential curve, meaning that low values are exponentially low and high values scale up quickly. This allows for both fine motor control and
+    #[cont.] power without the need to press a button or aply a new setting
         negativeOutput = False
-        if(x<0):
+        if(x<0):#checks for negative value. The equation can only scale positive numbers exponentially, so we pass a positive value regardless and then switch it back to negative after the calculations are done
             negativeOutput = True
         x = abs(x)
         x = x*math.pow(100,x-1.05)+(0.206*x)
@@ -98,14 +93,6 @@ class MyRobot(wpilib.SampleRobot):
 
             self.drive.xboxTankDrive(self.controller.getLeftY(), self.controller.getRightY())
 
-'''
-    class autonomus(lfmotor, lbmotor, rbmotor, rfmotor):
-        def _autonInit_()
-
-        def turnAngle()
-            if():
-
-'''
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)

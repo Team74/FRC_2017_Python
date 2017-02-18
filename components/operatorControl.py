@@ -27,14 +27,10 @@ class opControl(Component):
 
         self.flash1 = DigitalOutput(0)
         self.flash2 = DigitalOutput(1)
-        self.frontIntake = Spark(4)
-        self.backIntake = Spark(5)
-        self.shooterMain = Spark(6)
-        self.shooterSecondary = Spark(7)
-        self.shooterFeed = Spark(8)
-        self.climberMotor = Spark(9)
-        self.releaseMotor = Spark(10) # This may not be nessecary depending upon how we decide to deploy the climber
-        self.agitator = Spark(11)
+        self.frontIntake = CANTalon(4)
+        self.shooterMain = CANTalon(5)
+        self.shooterFeed = CANTalon(6)
+        self.climberMotor = CANTalon(7) # This may not be nessecary depending upon how we decide to deploy the climber
         self.shooterMain.set(self.shooterSpeed)
         '''
         self.frontIntake.enableBrakeMode(True)
@@ -50,22 +46,22 @@ class opControl(Component):
 
     def modifySpeed(self, rightTrigger, leftTrigger):
         if(rightTrigger):
-            self.shooterSpeed = self.shooterSpeed + .01
+            self.shooterSpeed = self.shooterSpeed + 0.01
             self.shooterMain.set(self.shooterSpeed)
             print("right trigger looping")
         if(leftTrigger):
-            self.shooterSpeed= self.shooterSpeed- .01
+            self.shooterSpeed= self.shooterSpeed- 0.01
             self.shooterMain.set(self.shooterSpeed)
             print ("left Trigger Looping")
 
     def setSpeed(self):
-        self.shooterSpeed = .5
+        self.shooterSpeed = 0.5
         '''
 
     def getShooter(self):
         return self.shooterToggle
 
-    def toggleIntake(self, aButton):
+    def toggleIntake(self, aButton):#the wait is because under normal circumstances the code will cycle twice, so when you press the button it turns the intake off and on before you can release the button
         if(self.wait>0):
             self.wait-=1
         elif(self.wait<=0):
@@ -84,7 +80,7 @@ class opControl(Component):
                 self.frontIntake.set(0)
                 self.backIntake.set(0)
 
-    def toggleLights(self, yButton):
+    def toggleLights(self, yButton): #wait is implemented for the same reason as above, if it isnt implemented below it probably needs to be.
         if(self.wait2>0):
             self.wait2-=1
         elif(self.wait2<=0):
@@ -99,13 +95,13 @@ class opControl(Component):
             else:
                 pass
 
-    def reverseIntake(self, bButton):
+    def reverseIntake(self, bButton):# reverses the intake in case we need to dump our balls onto the field (probably in case of climbing)
         if(bButton):
             self.frontIntake.set(self.intakeToggle*(-1))
         else:
             pass
 
-    def toggleShooter(self, xButton):
+    def toggleShooter(self, xButton):#switches the front motors on or off
         if(xButton and ShooterToggle == True):
             self.ShooterToggle = False
         elif(xButton and ShooterToggle == False):
@@ -118,12 +114,18 @@ class opControl(Component):
     def fire(self, rightTrigger):
             self.shooterFeed.set(int(rightTrigger))
 
-    def climb(self, climberStick):
+    def singleFire(self,leftTrigger):#single ball fire for testing
+        if(leftTrigger and self.wait3 < 30):
+            self.shooterFeed.set(1)
+            self.wait3+=1
+        else:
+            self.shooterFeed.set(0)
+
+    def climb(self, climberStick):#using a stick because we ran out of buttons on the controller
         self.climberMotor.set(climberStick)
 
-    def agitate(self, agitatorBumper):
-        if(agitatorBumper == True):
-            self.agitator.set(1)
+    def agitate(self, agitatorBumper):#agitates balls
+        self.agitator.set(int(agitatorBumper))
 
     def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,agitatorBumper,leftTrigger): #rightBumper= agitator
         #self.modifySpeed(rightTrigger,leftTrigger)
