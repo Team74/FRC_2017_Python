@@ -17,7 +17,7 @@ from ctre.cantalon import CANTalon
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
 from components import *
 ## from wpilib import USBCamera, CameraServer
-from tthhiinnggyy import Tthhinnggyy
+
 
 
 class MyRobot(wpilib.SampleRobot):
@@ -53,33 +53,20 @@ class MyRobot(wpilib.SampleRobot):
     def autonomous(self):
 
         self.drive.reset()
-        self.thng = Tthhinnggyy(self.drive)
-        x = 50
-        #self.drive.enablePIDs()
-
         while self.isAutonomous() and self.isEnabled():
-            #self.autonomous_modes.run()
-            self.thng.receive()
-            if x < 50:
-                x += 1
-                self.drive.autonTankDrive(0,0)
-                continue
-            if self.thng.centerSide():#and self.thng.centerLine() :	#this works because of short-circuiting
-                self.drive.reset()
-                print("hooboyshoot")
-                x = 0
+            self.autonomous_modes.run()
+
 
     def operatorControl(self):
-        # Resetting encoders
-        #self.drive.enablePIDs()
-        self.opControl.setSpeed()
+
+        #self.opControl.setSpeed() #used for manually setting motor speeds for testing, disable for teleop
         while self.isOperatorControl() and self.isEnabled():
             wpilib.SmartDashboard.putNumber("GyroAngle",self.drive.getGyroAngle())
             wpilib.SmartDashboard.putNumber("Intake Speed",self.drive.getIntakeSpeed())
             wpilib.SmartDashboard.putNumber("Distance", self.drive.getDistance())
-            wpilib.SmartDashboard.putNumber("ShooterSpeed", self.opControl.getSpeed())
+            #wpilib.SmartDashboard.putNumber("ShooterSpeed", self.opControl.getSpeed())
             self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))
-            if(self.controller.getButtonX() == True):
+            if(self.controller.getButtonX()):
                 self.drive.zeroGyro()
 
             self.opControl.operatorFunctions(self.controller2.getButtonA(), self.controller2.getButtonB(), self.controller2.getButtonX(), self.controller2.getButtonY(), self.controller2.getLeftY(), self.controller2.getRightTrigger(), self.controller2.getRightBumper(), self.controller2.getLeftTrigger())

@@ -36,7 +36,6 @@ class opControl(Component):
         self.releaseMotor = Spark(10) # This may not be nessecary depending upon how we decide to deploy the climber
         self.agitator = Spark(11)
         self.shooterMain.set(self.shooterSpeed)
-
         '''
         self.frontIntake.enableBrakeMode(True)
         self.backIntake.enableBrakeMode(True)
@@ -45,7 +44,7 @@ class opControl(Component):
         self.shooterFeed.enableBrakeMode(True)
         self.climberMotor.enableBrakeMode(True)
         self.releaseMotor.enableBrakeMode(True)
-        '''
+
     def getSpeed(self):
         return self.shooterSpeed
 
@@ -62,6 +61,7 @@ class opControl(Component):
     def setSpeed(self):
         self.shooterSpeed = .5
         '''
+
     def getShooter(self):
         return self.shooterToggle
 
@@ -111,29 +111,27 @@ class opControl(Component):
         elif(xButton and ShooterToggle == False):
             self.ShooterToggle = True
 
-        self.shooterMain.set(self.ShooterSpeed)
+        self.shooterMain.set(self.shooterSpeed)
 
         self.shooterSecondary.set(self.ShooterFeedSpeed)
 
     def fire(self, rightTrigger):
-        if(rightTrigger):
-            self.shooterFeed.set(1)
+            self.shooterFeed.set(int(rightTrigger))
+
     def climb(self, climberStick):
         self.climberMotor.set(climberStick)
 
     def agitate(self, agitatorBumper):
         if(agitatorBumper == True):
             self.agitator.set(1)
-'''
-    def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,agitatorBumper,leftTrigger): #rightBumper= agitator
-        self.modifySpeed(rightTrigger,leftTrigger)
 
-        '''
-            self.toggleIntake(aButton)
-            self.toggleLights(bButton)
-            self.reverseIntake(xButton)
-            self.toggleShooter(yButton)
-            self.fire(rightTrigger)
-            self.climb(climberStick)
-            self.agitate(agitatorBumper)
-            '''
+    def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,agitatorBumper,leftTrigger): #rightBumper= agitator
+        #self.modifySpeed(rightTrigger,leftTrigger)
+
+        self.toggleIntake(aButton)
+        self.toggleLights(bButton)
+        self.reverseIntake(xButton)
+        self.toggleShooter(yButton)
+        self.fire(rightTrigger)
+        self.climb(climberStick)
+        self.agitate(agitatorBumper)

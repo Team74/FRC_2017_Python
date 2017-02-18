@@ -10,19 +10,22 @@ from ctre.cantalon import CANTalon
 from wpilib.interfaces import Gyro
 from . import Component
 from tthhiinnggyy import Tthhinnggyy
+from xbox import XboxController
+
 
 
 class driveTrain(Component):
 
     def __init__(self, robot):
         super().__init__()
-        self.INCHES_PER_REV = 18.849
+        self.INCHES_PER_REV = 2*3.1415926*2
         self.robot = robot
         self.gyro = wpilib.ADXRS450_Gyro(0)
         self.gyro.calibrate()
         self.intakeOn = False
         self.intakeSpeed = .5
         self.i = 1
+        self.controller = XboxController(0)
         self.lfmotor = CANTalon(1)
         self.lbmotor = CANTalon(2)
         self.rfmotor = CANTalon(3)
@@ -37,6 +40,7 @@ class driveTrain(Component):
         #self.lfmotor.setInverted(False)
         #self.rbmotor.setInverted(True)
         #self.lbmotor.setInverted(False)
+        #jingle bells, jingle bells
         self.rfmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
         self.rbmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
         self.lfmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
@@ -77,7 +81,7 @@ class driveTrain(Component):
         self.zeroGyro()
 
     def turnAngle(self, degrees):
-
+        #jingle all the way
         if(self.gyro.getAngle() > degrees+1):
             self.autonTankDrive(-0.2, 0.2)
             print(self.gyro.getAngle())
@@ -92,6 +96,23 @@ class driveTrain(Component):
         self.thng.receive()
         if self.thng.centerSide():#and self.thng.centerLine() :	#this works because of short-circuiting
             print("hooboyshoot")
+            self.drive.reset()
+            #oh what fun it is to ride
+
+    def findGoal(self, bButton):
+        if(bButton):
+            self.thng = Tthhinnggyy(self.drive)
+            x = 50
+            self.thng.receive()
+            if x < 50:
+                x += 1
+                self.drive.autonTankDrive(0,0)
+                return False
+            if self.thng.centerSide():#and self.thng.centerLine() :	#this works because of short-circuiting #in a one-horse open sleigh
+                self.drive.reset()
+                return True
+                x = 0
+            return False
 
     def drive(self, leftX, leftY, rightX):
             self.robotDrive.mecanumDrive_Cartesian(leftX*.75, leftY*.75, rightX*.75, self.gyro.getAngle())
@@ -138,3 +159,6 @@ class driveTrain(Component):
 
     def convertEncoderRaw(self, selectedEncoderValue):
         return selectedEncoderValue * self.INCHES_PER_REV
+
+    def passB(self):
+        self.findGoal(self.controller.getButtonB())
