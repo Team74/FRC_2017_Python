@@ -32,7 +32,6 @@ class opControl(Component):
         self.shooterFeed = CANTalon(6)
         self.climberMotor = CANTalon(7) # This may not be nessecary depending upon how we decide to deploy the climber
         self.shooterMain.set(self.shooterSpeed)
-
         '''
         self.frontIntake.enableBrakeMode(True)
         self.backIntake.enableBrakeMode(True)
@@ -41,7 +40,7 @@ class opControl(Component):
         self.shooterFeed.enableBrakeMode(True)
         self.climberMotor.enableBrakeMode(True)
         self.releaseMotor.enableBrakeMode(True)
-        '''
+
     def getSpeed(self):
         return self.shooterSpeed
 
@@ -58,6 +57,7 @@ class opControl(Component):
     def setSpeed(self):
         self.shooterSpeed = 0.5
         '''
+
     def getShooter(self):
         return self.shooterToggle
 
@@ -107,13 +107,12 @@ class opControl(Component):
         elif(xButton and ShooterToggle == False):
             self.ShooterToggle = True
 
-        self.shooterMain.set(self.ShooterSpeed)
+        self.shooterMain.set(self.shooterSpeed)
 
         self.shooterSecondary.set(self.ShooterFeedSpeed)
 
-    def fire(self, rightTrigger):#full auto feeding into the shooter
-        if(rightTrigger):
-            self.shooterFeed.set(1)
+    def fire(self, rightTrigger):
+            self.shooterFeed.set(int(rightTrigger))
 
     def singleFire(self,leftTrigger):#single ball fire for testing
         if(leftTrigger and self.wait3 < 30):
@@ -126,18 +125,15 @@ class opControl(Component):
         self.climberMotor.set(climberStick)
 
     def agitate(self, agitatorBumper):#agitates balls
-        if(agitatorBumper == True):
-            self.agitator.set(1)
-'''
-    def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,agitatorBumper,leftTrigger): #rightBumper= agitator
-        self.modifySpeed(rightTrigger,leftTrigger)
+        self.agitator.set(int(agitatorBumper))
 
-        '''
-            self.toggleIntake(aButton)
-            self.toggleLights(bButton)
-            self.reverseIntake(xButton)
-            self.toggleShooter(yButton)
-            self.fire(rightTrigger)
-            self.climb(climberStick)
-            self.agitate(agitatorBumper)
-            '''
+    def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,agitatorBumper,leftTrigger): #rightBumper= agitator
+        #self.modifySpeed(rightTrigger,leftTrigger)
+
+        self.toggleIntake(aButton)
+        self.toggleLights(bButton)
+        self.reverseIntake(xButton)
+        self.toggleShooter(yButton)
+        self.fire(rightTrigger)
+        self.climb(climberStick)
+        self.agitate(agitatorBumper)

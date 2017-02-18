@@ -17,6 +17,8 @@ from robotpy_ext.autonomous.selector import AutonomousModeSelector
 
 ## from wpilib import USBCamera, CameraServer
 
+
+
 class MyRobot(wpilib.SampleRobot):
 
     def robotInit(self):
@@ -49,17 +51,16 @@ class MyRobot(wpilib.SampleRobot):
     def autonomous(self):
 
         self.drive.reset()
-        #self.drive.enablePIDs()
-
         while self.isAutonomous() and self.isEnabled():
             self.autonomous_modes.run()
 
+
     def operatorControl(self):
-        # Resetting encoders
-        #self.drive.enablePIDs()
+        #self.opControl.setSpeed() #used for manually setting motor speeds for testing, disable for teleop
         while self.isOperatorControl() and self.isEnabled():
             wpilib.SmartDashboard.putNumber("GyroAngle",self.drive.getGyroAngle())#Putting important information onto the dashboard for reference in teleop
             wpilib.SmartDashboard.putNumber("Distance", self.drive.getDistance())
+
             self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
             #[cont.] the drive functions file. It also wraps the values with the scaleInput method which puts the input on an exponential curve, which gives the driver both fine-tuned control and power if you need it
             if(self.controller.getButtonX() == True):#This just allows the driver to zero the gyro out. It drifts between 30 and 60 degrees on every 360 degree rotation. It's  a hardare problem so this is the best we can  do
