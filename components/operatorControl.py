@@ -19,7 +19,7 @@ class opControl(Component):
         self.wait = 0
         self.wait2 = 0
         #self.ShooterSpeed = 1
-        self.ShooterFeedSpeed = .20
+        self.ShooterFeedSpeed = 1
         self.intakeToggle = False
         self.shooterToggle = True
         self.lights = True
@@ -27,10 +27,10 @@ class opControl(Component):
 
         self.flash1 = DigitalOutput(0)
         self.flash2 = DigitalOutput(1)
-        self.frontIntake = CANTalon(4)
+        self.frontIntake = CANTalon(3)
         self.shooterMain = CANTalon(5)
-        self.shooterFeed = CANTalon(6)
-        self.climberMotor = CANTalon(7) # This may not be nessecary depending upon how we decide to deploy the climber
+        self.shooterFeed = CANTalon(4)
+        self.climberMotor = CANTalon(8) # This may not be nessecary depending upon how we decide to deploy the climber
         self.shooterMain.set(self.shooterSpeed)
         '''
         self.frontIntake.enableBrakeMode(True)
