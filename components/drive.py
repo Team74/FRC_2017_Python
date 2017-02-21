@@ -25,12 +25,12 @@ class driveTrain(Component):
 		self.intakeOn = False
 		self.intakeSpeed = .5
 		self.i = 1
-		self.lfmotor = CANTalon(1)
-		self.lbmotor = CANTalon(0)
-		self.rfmotor = CANTalon(3)
+		self.lfmotor = CANTalon(7)
+		self.lbmotor = CANTalon(6)
+		self.rfmotor = CANTalon(1)
 		self.rbmotor = CANTalon(2)
 		self.robotDrive = RobotDrive(self.lfmotor, self.lbmotor, self.rfmotor, self.rbmotor)
-		self.distanceSensor = DigitalInput(3)
+		self.distanceSensor = DigitalInput(2)
 		self.rfmotor.enableBrakeMode(True)
 		self.rbmotor.enableBrakeMode(True)
 		self.lfmotor.enableBrakeMode(True)
@@ -83,7 +83,6 @@ class driveTrain(Component):
 			self.autonTankDrive(-1*speed, speed)
 			print(self.gyro.getAngle())
 		elif(self.gyro.getAngle() < degrees-0.25):
-
 			self.autonTankDrive(speed, -1*speed)
 			print(self.gyro.getAngle())
 			print('turningRight')

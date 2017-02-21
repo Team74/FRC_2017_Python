@@ -30,7 +30,7 @@ class Tthhinnggyy:
 
 	def __init__(self):
 		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
-		pass
+		#pass
 	def receive(self):
 		self.ser.write("boom ya got waffles\n".encode())
 		ans = self.ser.readline()
