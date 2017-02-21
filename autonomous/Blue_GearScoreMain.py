@@ -1,7 +1,7 @@
 """
 File Author: Will Hescott
 File Creation Date: 2/4/2016
-File Purpose: Score a gear into the 'Main' (Frontmost) gear scoring station
+File Purpose: Score a gear into the 'Main' (Frontmost) gear scoring station on the blue side
 """
 
 from robotpy_ext.autonomous import StatefulAutonomous, state, timed_state
@@ -13,7 +13,7 @@ from wpilib import SendableChooser
 
 class autonomousModeTestingLowBar(StatefulAutonomous):
 
-    MODE_NAME = 'GearScoreMain'
+    MODE_NAME = 'Blue_GearScoreMiddle'
     DEFAULT = False
     DRIVE_DISTANCE = 60
     #drive = driveTrain
@@ -36,12 +36,31 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
 
     @state()
     def drive_forward(self) :
-        if self.drive.getDistance() > -87.3:
-            self.drive.autonTankDrive(-0.5, -0.5)
+        if self.drive.getDistance() < 67:
+            self.drive.autonTankDrive(0.5, 0.5)
         else :
             #self.drive.autonTankDrive(0, 0)
+            if(self.drive.turnAngle(-90, .3)):
+                self.drive.reset()
+                self.next_state('strafe_left')
+
+    @state
+    def strafe_left(self):
+        if not(self.drive.getSensor()==False):
+            self.drive.drive(-0.5, 0, 0)
+        else:
             self.drive.reset()
-            self.next_state('done')
+            x=0
+            if(x==100 or x>100):
+                self.next_state('strafe_right')
+            else:
+                x+=1
+
+
+    @timed_state(first=False, duration=2, next_state='done')
+    def strafe_right(self):
+        self.drive.drive(0.5, 0, 0.25)
+
 
     @state()
     def done(self) :

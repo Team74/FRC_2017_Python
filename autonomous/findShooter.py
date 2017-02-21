@@ -38,12 +38,15 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
         self.drive.reset()
         self.drive.autonTankDrive(0, 0)
 
-    @timed_state(first=False, duration = 7, next_state ='done')
+    #@timed_state(first=False, duration = 7, next_state ='done')
+    @state
     def findGoal(self):
         if(self.drive.findGoal()):
-            self.opControl.fire(True)
+            #self.next_state('done')
+            pass    
 
 
     @state()
     def done(self) :
         self.drive.autonTankDrive(0, 0)
+        self.opControl.fire(True)

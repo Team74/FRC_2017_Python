@@ -34,9 +34,8 @@ class opControl(Component):
         self.shooterMain.set(self.shooterSpeed)
         '''
         self.frontIntake.enableBrakeMode(True)
-        self.backIntake.enableBrakeMode(True)
+        self..enableBrakeMode(True)
         self.shooterMain.enableBrakeMode(True)
-        self.shooterSecondary.enableBrakeMode(True)
         self.shooterFeed.enableBrakeMode(True)
         self.climberMotor.enableBrakeMode(True)
         self.releaseMotor.enableBrakeMode(True)
@@ -75,10 +74,8 @@ class opControl(Component):
                 pass
         if(self.intakeToggle == True):
                 self.frontIntake.set(0.75)
-                self.backIntake.set(0.75)
         else:
                 self.frontIntake.set(0)
-                self.backIntake.set(0)
 
     def toggleLights(self, yButton): #wait is implemented for the same reason as above, if it isnt implemented below it probably needs to be.
         if(self.wait2>0):
@@ -108,9 +105,6 @@ class opControl(Component):
             self.ShooterToggle = True
 
         self.shooterMain.set(self.shooterSpeed)
-
-        self.shooterSecondary.set(self.ShooterFeedSpeed)
-
     def fire(self, rightTrigger):
             self.shooterFeed.set(int(rightTrigger))
 
@@ -124,10 +118,8 @@ class opControl(Component):
     def climb(self, climberStick):#using a stick because we ran out of buttons on the controller
         self.climberMotor.set(climberStick)
 
-    def agitate(self, agitatorBumper):#agitates balls
-        self.agitator.set(int(agitatorBumper))
 
-    def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,agitatorBumper,leftTrigger): #rightBumper= agitator
+    def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,leftTrigger): #rightBumper= agitator
         #self.modifySpeed(rightTrigger,leftTrigger)
 
         self.toggleIntake(aButton)
@@ -136,4 +128,3 @@ class opControl(Component):
         self.toggleShooter(yButton)
         self.fire(rightTrigger)
         self.climb(climberStick)
-        self.agitate(agitatorBumper)

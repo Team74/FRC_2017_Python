@@ -5,149 +5,175 @@ File Purpose: To create and run our drive functions
 """
 
 import wpilib
-from wpilib import Encoder, Timer, RobotDrive, Spark
+from wpilib import Encoder, Timer, RobotDrive, Spark, DigitalInput
 from ctre.cantalon import CANTalon
 from wpilib.interfaces import Gyro
 from . import Component
+import tthhiinnggyy
 from tthhiinnggyy import Tthhinnggyy
-from xbox import XboxController
-
+import math
 
 
 class driveTrain(Component):
 
-    def __init__(self, robot):
-        super().__init__()
-        self.INCHES_PER_REV = 2*3.1415926*2
-        self.robot = robot
-        self.gyro = wpilib.ADXRS450_Gyro(0)
-        self.gyro.calibrate()
-        self.intakeOn = False
-        self.intakeSpeed = .5
-        self.i = 1
-        self.controller = XboxController(0)
-        self.lfmotor = CANTalon(1)
-        self.lbmotor = CANTalon(2)
-        self.rfmotor = CANTalon(3)
-        self.rbmotor = CANTalon(0)
-        self.robotDrive = RobotDrive(self.lfmotor, self.lbmotor, self.rfmotor, self.rbmotor)
-        self.rfmotor.enableBrakeMode(True)
-        self.rbmotor.enableBrakeMode(True)
-        self.lfmotor.enableBrakeMode(True)
-        self.lbmotor.enableBrakeMode(True)
+	def __init__(self, robot):
+		super().__init__()
+		self.INCHES_PER_REV = 2*3.1415926*2
+		self.robot = robot
+		self.gyro = wpilib.ADXRS450_Gyro(0)
+		self.gyro.calibrate()
+		self.intakeOn = False
+		self.intakeSpeed = .5
+		self.i = 1
+		self.lfmotor = CANTalon(1)
+		self.lbmotor = CANTalon(0)
+		self.rfmotor = CANTalon(3)
+		self.rbmotor = CANTalon(2)
+		self.robotDrive = RobotDrive(self.lfmotor, self.lbmotor, self.rfmotor, self.rbmotor)
+		self.distanceSensor = DigitalInput(3)
+		self.rfmotor.enableBrakeMode(True)
+		self.rbmotor.enableBrakeMode(True)
+		self.lfmotor.enableBrakeMode(True)
+		self.lbmotor.enableBrakeMode(True)
 
-        self.rfmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
-        self.rbmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
-        self.lfmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
-        self.lbmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
-        self.lfmotor.configEncoderCodesPerRev(4096)
-        self.rfmotor.configEncoderCodesPerRev(4096)
-        self.lbmotor.configEncoderCodesPerRev(4096)
-        self.rbmotor.configEncoderCodesPerRev(4096)
-        self.rfmotor.setPosition(0)
-        self.lfmotor.setPosition(0)
-        self.rbmotor.setPosition(0)
-        self.lbmotor.setPosition(0)
+		self.rfmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+		self.rbmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+		self.lfmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+		self.lbmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+		self.lfmotor.configEncoderCodesPerRev(4096)
+		self.rfmotor.configEncoderCodesPerRev(4096)
+		self.lbmotor.configEncoderCodesPerRev(4096)
+		self.rbmotor.configEncoderCodesPerRev(4096)
+		self.rfmotor.setPosition(0)
+		self.lfmotor.setPosition(0)
+		self.rbmotor.setPosition(0)
+		self.lbmotor.setPosition(0)
+		self.myInertia = 0
+		self.thng = Tthhinnggyy()
 
-        self.thng = Tthhinnggyy(self.drive)
+	def drive_forward(self, speed) :
+		self.drive.tankDrive(speed, speed, True)
 
-    def drive_forward(self, speed) :
-        self.drive.tankDrive(speed, speed, True)
-    def autonTankDrive(self, leftSpeed, rightSpeed):
-        self.lfmotor.set(leftSpeed)
-        self.lbmotor.set(leftSpeed)
-        self.rfmotor.set(rightSpeed)
-        self.rbmotor.set(rightSpeed)
-    def drive_stop(self):
-        self.drive.tankDrive(0,0)
-    def reset(self):
-        self.rfmotor.set(0)
-        self.rbmotor.set(0)
-        self.lfmotor.set(0)
-        self.lbmotor.set(0)
-        self.rfmotor.setPosition(0)
-        self.rbmotor.setPosition(0)
-        self.lfmotor.setPosition(0)
-        self.lbmotor.setPosition(0)
-        self.rfmotor.setEncPosition(0)
-        self.rbmotor.setEncPosition(0)
-        self.lfmotor.setEncPosition(0)
-        self.lbmotor.setEncPosition(0)
-        self.zeroGyro()
+	def autonTankDrive(self, leftSpeed, rightSpeed):
+		self.lfmotor.set(leftSpeed)
+		self.lbmotor.set(leftSpeed)
+		self.rfmotor.set(rightSpeed)
+		self.rbmotor.set(rightSpeed)
 
-    def turnAngle(self, degrees):
-        if(self.gyro.getAngle() > degrees+1):
-            self.autonTankDrive(-0.2, 0.2)
-            print(self.gyro.getAngle())
-        elif(self.gyro.getAngle() < degrees-1):
+	def getSensor(self):
+			return self.distanceSensor.get()
 
-            self.autonTankDrive(0.2, -0.2)
-            print(self.gyro.getAngle())
-            print('turningRight')
-        elif(self.gyro.getAngle() <= degrees-1):
-            self.autonTankDrive(-0.2, 0.2)
-            print('turningLeft')
-            print(self.gyro.getAngle())
-        else:
-            return True
-        return False
+	def reset(self):
+		self.rfmotor.set(0)
+		self.rbmotor.set(0)
+		self.lfmotor.set(0)
+		self.lbmotor.set(0)
+		self.rfmotor.setPosition(0)
+		self.rbmotor.setPosition(0)
+		self.lfmotor.setPosition(0)
+		self.lbmotor.setPosition(0)
+		self.rfmotor.setEncPosition(0)
+		self.rbmotor.setEncPosition(0)
+		self.lfmotor.setEncPosition(0)
+		self.lbmotor.setEncPosition(0)
+		self.zeroGyro()
 
-    def visionLineUp(self):
-        self.thng.receive()
-        if self.thng.centerSide():#and self.thng.centerLine() :	#this works because of short-circuiting
-            print("hooboyshoot")
-            self.drive.reset()
-            #oh what fun it is to ride
+	def turnAngle(self, degrees, speed=0.2):
+		if(self.gyro.getAngle() > degrees+0.25):
+			self.autonTankDrive(-1*speed, speed)
+			print(self.gyro.getAngle())
+		elif(self.gyro.getAngle() < degrees-0.25):
 
-    def findGoal(self, bButton):
-        if(bButton):
-            self.thng = Tthhinnggyy(self.drive)
-            x = 50
-            self.thng.receive()
-            if x < 50:
-                x += 1
-                self.drive.autonTankDrive(0,0)
-                return False
-            if self.thng.centerSide():#and self.thng.centerLine() :	#this works because of short-circuiting #in a one-horse open sleigh
-                self.drive.reset()
-                return True
-                x = 0
-            return False
+			self.autonTankDrive(speed, -1*speed)
+			print(self.gyro.getAngle())
+			print('turningRight')
+		elif(self.gyro.getAngle() <= degrees-0.25):
+			self.autonTankDrive(-1*speed, speed)
+			print('turningLeft')
+			print(self.gyro.getAngle())
+		else:
+			return True
+		return False
 
-    def drive(self, leftX, leftY, rightX):
-            self.robotDrive.mecanumDrive_Cartesian(leftX*-1, leftY*-1, rightX, self.gyro.getAngle())
-    def zeroGyro(self):
-        self.gyro.reset()
-    def enablePIDs(self):
-        '''
-        #No longer required because we swapped from analog encoders to magnetic encoders
-        self.pidLeftFront.enable()
-        self.pidLeftBack.enable()
-        self.pidRightFront.enable()
-        self.pidRightBack.enable()
-        '''
-    # Disable PID Controllers
-    def disablePIDs(self):
-        '''
-        #see explaination above
-        self.pidLeftFront.disable()
-        self.pidLeftBack.disable()
-        self.pidRightFront.disable()
-        self.pidRightBack.disable()
-        '''
-    def getGyroAngle(self):
-        return self.gyro.getAngle()
-    def getIntakeSpeed(self):
-        return self.intakeSpeed
-    def getDistance(self):
-        return (self.convertEncoderRaw(abs(self.rfmotor.getPosition()))
-                + self.convertEncoderRaw(abs(self.rbmotor.getPosition()))
-                + self.convertEncoderRaw(abs(self.lfmotor.getPosition()))
-                + self.convertEncoderRaw(abs(self.lbmotor.getPosition())))/4
-        #detirmines how many ticks the encoder has processed
-        #converts ticks from getMotorDistance into inches
-    def convertEncoderRaw(self, selectedEncoderValue):
-        return selectedEncoderValue * self.INCHES_PER_REV
+	def visionLineUp(self):
+		self.thng.receive()
+		if self.thng.centerSide():#and self.thng.centerLine() :	#this works because of short-circuiting
+			print("hooboyshoot")
+			self.reset()
+			#oh what fun it is to ride
 
-    def passB(self):
-        self.findGoal(self.controller.getButtonB())
+	def findGoal(self):
+		x = 25
+		self.thng.receive()
+		if x < 25:
+			x += 1
+			self.autonTankDrive(0,0)
+			return False
+		if self.centerSide():#and self.thng.centerLine() :	#this works because of short-circuiting #in a one-horse open sleigh
+			self.reset()
+			x = 0
+			return True
+		return False
+
+	def drive(self, leftX, leftY, rightX):
+			self.robotDrive.mecanumDrive_Cartesian(leftX*-1, leftY*-1, rightX, self.gyro.getAngle())
+	def zeroGyro(self):
+		self.gyro.reset()
+	def enablePIDs(self):
+		'''
+		#No longer required because we swapped from analog encoders to magnetic encoders
+		self.pidLeftFront.enable()
+		self.pidLeftBack.enable()
+		self.pidRightFront.enable()
+		self.pidRightBack.enable()
+		'''
+	# Disable PID Controllers
+	def disablePIDs(self):
+		'''
+		#see explaination above
+		self.pidLeftFront.disable()
+		self.pidLeftBack.disable()
+		self.pidRightFront.disable()
+		self.pidRightBack.disable()
+		'''
+	def getGyroAngle(self):
+		return self.gyro.getAngle()
+
+	def getIntakeSpeed(self):
+		return self.intakeSpeed
+
+	def getDistance(self):
+		return (self.convertEncoderRaw(abs(self.rfmotor.getPosition()))
+				+ self.convertEncoderRaw(abs(self.rbmotor.getPosition()))
+				+ self.convertEncoderRaw(abs(self.lfmotor.getPosition()))
+				+ self.convertEncoderRaw(abs(self.lbmotor.getPosition())))/4
+		#detirmines how many ticks the encoder has processed
+		#converts ticks from getMotorDistance into inches
+	def convertEncoderRaw(self, selectedEncoderValue):
+		return selectedEncoderValue * self.INCHES_PER_REV
+
+	def centerSide(self):
+		if(self.thng.mid_x == None):
+			self.autonTankDrive(0, 0)
+
+			if(self.myInertia > 0):
+				self.myInertia -= 1
+			return False
+		elif(abs(self.thng.mid_x) > tthhiinnggyy.DDZ_ROT):	#radians, arbitrary deadzone value
+			if(abs(self.thng.mid_x) > 0.15):
+				spdMag = 0.15
+			else:
+				spdMag = 0.09
+			if(self.myInertia <= 1):
+				spdMag += 0.02
+				print("Speed Boost")
+				self.myInertia = 0
+			if(self.myInertia <= 5):
+				self.myInertia += 1
+			spd = math.copysign(spdMag, self.thng.mid_x)#min(max(MIN_ROT_SPD, abs(self.mid_x)), MAX_ROT_SPD), self.mid_x)	#again arbitrary numbers
+			self.autonTankDrive(spd, -spd)
+			return False
+		self.autonTankDrive(0, 0)
+		if(self.myInertia > 0):
+			self.myInertia -= 1
+		return True

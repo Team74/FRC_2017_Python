@@ -30,6 +30,7 @@ class MyRobot(wpilib.SampleRobot):
         self.dashTimer = wpilib.Timer()     # Timer for SmartDashboard updating
         self.dashTimer.start()
 
+
         # Initialize Components functions
         # components are referenced from auton to avoid the trouble of running multiple inits of the same objects
         self.components = {
@@ -60,13 +61,25 @@ class MyRobot(wpilib.SampleRobot):
         while self.isOperatorControl() and self.isEnabled():
             wpilib.SmartDashboard.putNumber("GyroAngle",self.drive.getGyroAngle())#Putting important information onto the dashboard for reference in teleop
             wpilib.SmartDashboard.putNumber("Distance", self.drive.getDistance())
+            wpilib.SmartDashboard.putNumber("Sensor", self.drive.getSensor())
 
-            self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
-            #[cont.] the drive functions file. It also wraps the values with the scaleInput method which puts the input on an exponential curve, which gives the driver both fine-tuned control and power if you need it
+            '''if self.controller.getButtonB():
+                self.drive.findGoal()
+            else:'''
+            if(self.controller.getButtonA() and self.drive.getSensor()==False):
+                self.drive.drive(0,0,0)
+            else:
+                if(self.controller.getRightTrigger()==True):#This statement tells the drivetrain exclusively track the target and ignore other movement commands. It is faster than the moving and shooting system and more accurate. we
+                    self.drive.findGoal()                  #do trade off mobility for it however, so it is important to have both
+                else:
+                    if(self.controller.getButtonB()):
+                        self.drive.findGoal()
+                    self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
+                    #[cont.] the drive functions file. It also wraps the values with the scaleInput method which puts the input on an exponential curve, which gives the driver both fine-tuned control and power if you need it
             if(self.controller.getButtonX() == True):#This just allows the driver to zero the gyro out. It drifts between 30 and 60 degrees on every 360 degree rotation. It's  a hardare problem so this is the best we can  do
                 self.drive.zeroGyro()
 
-            self.opControl.operatorFunctions(self.controller2.getButtonA(), self.controller2.getButtonB(), self.controller2.getButtonX(), self.controller2.getButtonY(), self.controller2.getLeftY(), self.controller2.getRightTrigger(), self.controller2.getRightBumper(), self.controller2.getLeftTrigger())
+            self.opControl.operatorFunctions(self.controller2.getButtonA(), self.controller2.getButtonB(), self.controller2.getButtonX(), self.controller2.getButtonY(), self.controller2.getLeftY(), self.controller2.getRightTrigger(), self.controller2.getLeftTrigger())
             #passes controller2 values to the operatorControl file
 
     def scaleInput(self, x):#Wrapper method that puts all 0-1 input on an exponential curve, meaning that low values are exponentially low and high values scale up quickly. This allows for both fine motor control and

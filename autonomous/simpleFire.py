@@ -2,6 +2,7 @@
 File Author: Will Hescott
 File Creation Date: 2/09/2017
 File Purpose: cross auton line and fire balls into the high goal
+Start with shooter facing driver station, ndxt to the boiler
 """
 
 from robotpy_ext.autonomous import StatefulAutonomous, state, timed_state
@@ -35,22 +36,24 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
 
     @state()
     def drive_backward(self) :
-        if self.drive.getDistance() > -100:
-            self.drive.autonTankDrive(-0.5, -0.5)
+        if self.drive.getDistance() < 50:
+            self.drive.autonTankDrive(0.5, 0.4)
         else :
-            #self.drive.autonTankDrive(0, 0)
             self.drive.reset()
-            self.next_state('done')
+            self.next_state('findGoal')
+
+    @state()
+    def findGoal(self):
+        if(self.drive.findGoal()):
+            self.drive.autonTankDrive(0, 0)
+            self.next_state('sim_Fire')
 
     @timed_state(first=False, duration=7.5, next_state='done')
     def sim_Fire(self) :
         self.drive.reset()
-        if(self.opcontrol.getShooter):
-            self.fire = true
-            while(fire):
-                self.opControl.fire(True)
-        else:
-            self.opcontrol.toggleShooter()
+        self.drive.fire(True)
+        #else:
+        #    self.opControl.toggleShooter(True)
 
 
     @state()

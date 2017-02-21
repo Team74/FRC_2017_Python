@@ -26,21 +26,11 @@ class Tthhinnggyy:
 	theta = None
 	distance = None
 	ser = None
-	drive = None
 	driveDelay = 0
-	myInertia = 0
 
-	def __init__(self, drive):
-		#self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
-		self.drive = drive
-	def autonTankDrive(self, l, r):
-		#print("turn\t" + str(l) + "\t" + str(r))
-		if self.driveDelay <= 0:
-			self.drive.autonTankDrive(l, r)
-			self.driveDelay = 0
-		else:
-			self.driveDelay -= 1
-
+	def __init__(self):
+		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
+		pass
 	def receive(self):
 		self.ser.write("boom ya got waffles\n".encode())
 		ans = self.ser.readline()
@@ -59,7 +49,6 @@ class Tthhinnggyy:
 		else:
 			print("no response")
 		self.mid_x = None
-		self.old_x = None
 		self.mid_y = None
 		self.theta = None
 		self.distance = None
@@ -88,36 +77,6 @@ class Tthhinnggyy:
 					number += char
 		return stuff
 
-	def centerSide(self):
-		if(self.mid_x == None):
-			self.autonTankDrive(0, 0)
-
-			if(self.myInertia > 0):
-				self.myInertia -= 1
-
-			return False
-		elif(abs(self.mid_x) > DDZ_ROT):	#radians, arbitrary deadzone value
-			if(abs(self.mid_x) > 0.125):
-				spdMag = 0.18
-			else:
-				spdMag = 0.11
-
-			if(self.myInertia <= 1):
-				spdMag += 0.03
-				print("Speed Boost")
-				self.myInertia = 0
-			if(self.myInertia <= 5):
-				self.myInertia += 1
-
-			spd = math.copysign(spdMag, self.mid_x)#min(max(MIN_ROT_SPD, abs(self.mid_x)), MAX_ROT_SPD), self.mid_x)	#again arbitrary numbers
-			self.autonTankDrive(spd, -spd)
-			return False
-		self.autonTankDrive(0, 0)
-
-		if(self.myInertia > 0):
-			self.myInertia -= 1
-
-		return True
 
 	def centerLine(self):
 		if(abs(self.distance - REF_DIST) > DDZ_MOV):	#meters, arbitrary deadzone value
