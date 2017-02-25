@@ -105,14 +105,17 @@ class driveTrain(Component):
 			self.reset()
 			#oh what fun it is to ride
 
-	def findGoal(self):
+	def findGoal(self, moveType=True):
 		x = 25
+
+		if moveType != self.thng.CamState:
+			self.thng.switch()
 		self.thng.receive()
 		if x < 25:
 			x += 1
 			self.autonTankDrive(0,0)
 			return False
-		if self.centerSide():#and self.thng.centerLine() :	#this works because of short-circuiting #in a one-horse open sleigh
+		if self.centerSide(moveType):#and self.thng.centerLine() :	#this works because of short-circuiting #in a one-horse open sleigh
 			self.reset()
 			x = 0
 			return True
@@ -155,7 +158,7 @@ class driveTrain(Component):
 	def convertEncoderRaw(self, selectedEncoderValue):
 		return selectedEncoderValue * self.INCHES_PER_REV
 
-	def centerSide(self):
+	def centerSide(self, moveType=True):
 		if(self.thng.mid_x == None):
 			self.autonTankDrive(0, 0)
 
@@ -174,9 +177,15 @@ class driveTrain(Component):
 			if(self.myInertia <= 5):
 				self.myInertia += 1
 			spd = math.copysign(spdMag, self.thng.mid_x)#min(max(MIN_ROT_SPD, abs(self.mid_x)), MAX_ROT_SPD), self.mid_x)	#again arbitrary numbers
-			self.autonTankDrive(spd, -spd)
+			if moveType:	#shooter
+				self.autonTankDrive(spd, -spd)
+			else:	#gears
+				self.autonTankDrive(spd, spd)	#forward, back -- gear on side
 			return False
 		self.autonTankDrive(0, 0)
 		if(self.myInertia > 0):
 			self.myInertia -= 1
 		return True
+
+
+
