@@ -19,7 +19,7 @@ REF_DIST = (REF_TOW_H - REF_CAM_H) / math.tan(REF_THETA)
 MUZZLE_VELOCITY = 30	#meters/second
 COMPLETELY_ARBITRARY_CONSTANT = 1
 
-class Tthhinnggyy:
+class Camera:
 	old_x = 0
 	mid_x = None
 	mid_y = None
