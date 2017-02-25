@@ -1,4 +1,4 @@
-#Will your code should be at the bottom. Fill in the stuff in HooBoyShoot. Also I think the calls to AutonTankDrive are wrong.
+Camera#Will your code should be at the bottom. Fill in the stuff in HooBoyShoot. Also I think the calls to AutonTankDrive are wrong.
 
 import math
 import serial
@@ -19,12 +19,12 @@ REF_DIST = (REF_TOW_H - REF_CAM_H) / math.tan(REF_THETA)
 MUZZLE_VELOCITY = 30	#meters/second
 COMPLETELY_ARBITRARY_CONSTANT = 1
 
-class Tthhinnggyy:
+class Camera:
 	old_x = 0
 	mid_x = None
 	mid_y = None
 	theta = None
-	distance = None
+	distance = None #returnss in meters
 	ser = None
 	driveDelay = 0
 
@@ -77,15 +77,6 @@ class Tthhinnggyy:
 					number += char
 		return stuff
 
-
-	def centerLine(self):
-		if(abs(self.distance - REF_DIST) > DDZ_MOV):	#meters, arbitrary deadzone value
-			spd = math.copysign(0.1, self.distance - REF_DIST)#max(MIN_MOV_SPD, abs(distance))*math.copysign(1.0, distance)
-			self.autonTankDrive(spd,spd)
-			return False
-		return True
-
-
 #max(MIN_ROT_SPD, min(MAX_ROT_SPD, abs(self.theta - REF_THETA)))
 '''	def ShootDistance(self):	#I *guarantee* this does *not* work
 		angle = math.arcsin(((REF_TOW_H - REF_CAM_H)/self.distance+4.9*self.distance)/MUZZLE_VELOCITY)
@@ -96,7 +87,7 @@ class Tthhinnggyy:
 		#it can be changed, but it's not important anyway
 '''
 '''
-thng.receive()
-if thng.centerSide() and thng.centerLine() :	#this works because of short-circuiting
+cam.receive()
+if cam.centerSide() and cam.centerLine() :	#this works because of short-circuiting
 	HooBoyShoot()
 '''

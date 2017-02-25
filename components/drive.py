@@ -11,8 +11,8 @@ from wpilib import Encoder, Timer, RobotDrive, Spark, DigitalInput
 from ctre.cantalon import CANTalon
 from wpilib.interfaces import Gyro
 from . import Component
-import tthhiinnggyy
-from tthhiinnggyy import Tthhinnggyy
+import camera
+from camera import Camera
 import math
 
 
@@ -53,7 +53,7 @@ class driveTrain(Component):
 		self.rbmotor.setPosition(0)
 		self.lbmotor.setPosition(0)
 		self.myInertia = 0
-		self.thng = Tthhinnggyy()
+		self.cam = Camera()
 
 	def drive_forward(self, speed) :
 		self.drive.tankDrive(speed, speed, True)
@@ -99,20 +99,20 @@ class driveTrain(Component):
 		return False
 
 	def visionLineUp(self):
-		self.thng.receive()
-		if self.thng.centerSide():#and self.thng.centerLine() :	#this works because of short-circuiting
+		self.cam.receive()
+		if self.cam.centerSide():#and self.cam.centerLine() :	#this works because of short-circuiting
 			print("hooboyshoot")
 			self.reset()
 			#oh what fun it is to ride
 
 	def findGoal(self):
 		x = 25
-		self.thng.receive()
+		self.cam.receive()
 		if x < 25:
 			x += 1
 			self.autonTankDrive(0,0)
 			return False
-		if self.centerSide():#and self.thng.centerLine() :	#this works because of short-circuiting #in a one-horse open sleigh
+		if self.centerSide():#and self.cam.centerLine() :	#this works because of short-circuiting #in a one-horse open sleigh
 			self.reset()
 			x = 0
 			return True
@@ -156,14 +156,14 @@ class driveTrain(Component):
 		return selectedEncoderValue * self.INCHES_PER_REV
 
 	def centerSide(self):
-		if(self.thng.mid_x == None):
+		if(self.cam.mid_x == None):
 			self.autonTankDrive(0, 0)
 
 			if(self.myInertia > 0):
 				self.myInertia -= 1
 			return False
-		elif(abs(self.thng.mid_x) > tthhiinnggyy.DDZ_ROT):	#radians, arbitrary deadzone value
-			if(abs(self.thng.mid_x) > 0.15):
+		elif(abs(self.cam.mid_x) > camera.DDZ_ROT):	#radians, arbitrary deadzone value
+			if(abs(self.cam.mid_x) > 0.15):
 				spdMag = 0.15
 			else:
 				spdMag = 0.09
@@ -173,10 +173,13 @@ class driveTrain(Component):
 				self.myInertia = 0
 			if(self.myInertia <= 5):
 				self.myInertia += 1
-			spd = math.copysign(spdMag, self.thng.mid_x)#min(max(MIN_ROT_SPD, abs(self.mid_x)), MAX_ROT_SPD), self.mid_x)	#again arbitrary numbers
+			spd = math.copysign(spdMag, self.cam.mid_x)#min(max(MIN_ROT_SPD, abs(self.mid_x)), MAX_ROT_SPD), self.mid_x)	#again arbitrary numbers
 			self.autonTankDrive(spd, -spd)
 			return False
 		self.autonTankDrive(0, 0)
 		if(self.myInertia > 0):
 			self.myInertia -= 1
 		return True
+
+		def convert(self, x):#converting meters to inches
+			return x*39.37
