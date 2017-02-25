@@ -6,7 +6,7 @@ File Purpose: To create and run our operator functions
 
 import wpilib
 
-from wpilib import Encoder, Timer, RobotDrive, Spark, DigitalOutput
+from wpilib import Encoder, Timer, RobotDrive, Spark, DigitalOutput, Relay
 from ctre.cantalon import CANTalon
 from wpilib.interfaces import Gyro
 from . import Component
@@ -18,14 +18,16 @@ class opControl(Component):
 
         self.wait = 0
         self.wait2 = 0
+        self.wait3 = 0
         #self.ShooterSpeed = 1
         self.ShooterFeedSpeed = 1
         self.intakeToggle = False
         self.shooterToggle = True
         self.lights = True
-        self.shooterSpeed = .5
+        self.shooterSpeed = .65
 
-        self.flash1 = DigitalOutput(0)
+        #self.flash1 = DigitalOutput(0)
+        self.flash1 = Relay(0)
         self.flash2 = DigitalOutput(1)
         self.frontIntake = CANTalon(3)
         self.shooterMain = CANTalon(5)
@@ -73,7 +75,7 @@ class opControl(Component):
             else:
                 pass
         if(self.intakeToggle == True):
-                self.frontIntake.set(0.75)
+                self.frontIntake.set(1)
         else:
                 self.frontIntake.set(0)
 
@@ -82,29 +84,46 @@ class opControl(Component):
             self.wait2-=1
         elif(self.wait2<=0):
             if(yButton and self.lights == False):
-                self.light.set(True)
-                self.light2.set(True)
+                #self.flash1.set(Relay.Value.kOn)
+                self.flash1.set(Relay.Value.kOn)
+                self.flash2.set(True)
+                self.wait2 = 25
+                print ('Lights_On')
                 self.lights = True
             elif(yButton and self.lights == True):
-                self.light.set(False)
-                self.light2.set(False)
+                #self.flash1.set(Relay.Value.Off)
+                self.flash1.set(Relay.Value.kOff)
+                self.flash2.set(False)
+                self.wait2 = 25
+                print ('Lights_Off')
                 self.lights = False
             else:
                 pass
-
+                '''
     def reverseIntake(self, bButton):# reverses the intake in case we need to dump our balls onto the field (probably in case of climbing)
         if(bButton):
             self.frontIntake.set(self.intakeToggle*(-1))
         else:
             pass
-
+            '''
     def toggleShooter(self, xButton):#switches the front motors on or off
-        if(xButton and ShooterToggle == True):
-            self.ShooterToggle = False
-        elif(xButton and ShooterToggle == False):
-            self.ShooterToggle = True
+        if(self.wait>0):
+            self.wait-=1
+        elif(self.wait<=0):
+            if(xButton and self.shooterToggle == False):
+                self.shooterToggle = True
+                self.wait = 20
+            elif(xButton and self.shooterToggle == True):
+                self.shooterToggle = False
+                self.wait = 20
+            else:
+                pass
+            if(self.shooterToggle == True):
+                self.shooterMain.set(self.shooterSpeed)
 
-        self.shooterMain.set(self.shooterSpeed)
+            elif(self.shooterToggle == False):
+                self.shooterMain.set(0)
+
     def fire(self, rightTrigger):
             self.shooterFeed.set(int(rightTrigger))
 
@@ -121,10 +140,10 @@ class opControl(Component):
 
     def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,leftTrigger): #rightBumper= agitator
         #self.modifySpeed(rightTrigger,leftTrigger)
-
+        print(self.lights)
         self.toggleIntake(aButton)
-        self.toggleLights(bButton)
-        self.reverseIntake(xButton)
-        self.toggleShooter(yButton)
+        self.toggleLights(yButton)
+        #self.reverseIntake(bButton)
+        self.toggleShooter(xButton)
         self.fire(rightTrigger)
         self.climb(climberStick)

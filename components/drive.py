@@ -5,6 +5,8 @@ File Purpose: To create and run our drive functions
 """
 
 import wpilib
+import robotpy_ext
+from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from wpilib import Encoder, Timer, RobotDrive, Spark, DigitalInput
 from ctre.cantalon import CANTalon
 from wpilib.interfaces import Gyro
@@ -20,15 +22,17 @@ class driveTrain(Component):
 		super().__init__()
 		self.INCHES_PER_REV = 2*3.1415926*2
 		self.robot = robot
-		self.gyro = wpilib.ADXRS450_Gyro(0)
-		self.gyro.calibrate()
+		self.gyro = AHRS.create_spi()
+		#self.gyro.calibrate()
 		self.intakeOn = False
 		self.intakeSpeed = .5
 		self.i = 1
-		self.lfmotor = CANTalon(7)
-		self.lbmotor = CANTalon(6)
-		self.rfmotor = CANTalon(1)
+		self.lfmotor = CANTalon(7)#7#2
+		self.lbmotor = CANTalon(6)#6#1
+		self.rfmotor = CANTalon(1)#1#3
 		self.rbmotor = CANTalon(2)
+		self.rfmotor.setInverted(True)
+		self.rbmotor.setInverted(True)
 		self.robotDrive = RobotDrive(self.lfmotor, self.lbmotor, self.rfmotor, self.rbmotor)
 		self.distanceSensor = DigitalInput(2)
 		self.rfmotor.enableBrakeMode(True)
