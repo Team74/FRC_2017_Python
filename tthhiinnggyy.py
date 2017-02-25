@@ -27,11 +27,12 @@ class Tthhinnggyy:
 	distance = None
 	ser = None
 	driveDelay = 0
+	CamState = True	#default, shooter / false = gears
 
 	def __init__(self):
 		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
 		#pass
-	def receive(self):
+	def receive(self, moveType=True):
 		self.ser.write("boom ya got waffles\n".encode())
 		ans = self.ser.readline()
 		if ans:
@@ -84,6 +85,11 @@ class Tthhinnggyy:
 			self.autonTankDrive(spd,spd)
 			return False
 		return True
+
+	def switch(self):
+		self.CamState = not self.CamState
+		self.ser.write("the times they are\n".encode())
+		self.ser.readline()
 
 
 #max(MIN_ROT_SPD, min(MAX_ROT_SPD, abs(self.theta - REF_THETA)))

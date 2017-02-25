@@ -71,6 +71,8 @@ class MyRobot(wpilib.SampleRobot):
             else:
                 if(self.controller.getRightTrigger()==True):#This statement tells the drivetrain exclusively track the target and ignore other movement commands. It is faster than the moving and shooting system and more accurate. we
                     self.drive.findGoal()                  #do trade off mobility for it however, so it is important to have both
+                elif self.controller.getButtonY():
+                    self.drive.findGoal(False)	#uses the other type
                 else:
                     if(self.controller.getButtonB()):
                         self.drive.findGoal()

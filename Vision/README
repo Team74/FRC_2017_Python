@@ -1,0 +1,5 @@
+Locations of stuff:
+theRealCamSetup.sh  in the other repo 
+pisight.py          also the other repo
+tthhiinnggyy.py     in main folder FRC_2017_Python
+vision functions    all in drive.py, called by robot.py
