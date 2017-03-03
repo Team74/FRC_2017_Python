@@ -20,6 +20,8 @@ class driveTrain(Component):
 
 	def __init__(self, robot):
 		super().__init__()
+		self.MAX_RANGE = 90
+		self.MIN_RANGE = 50
 		self.INCHES_PER_REV = 2*3.1415926*2
 		self.robot = robot
 		self.gyro = AHRS.create_spi()
@@ -53,7 +55,7 @@ class driveTrain(Component):
 		self.rbmotor.setPosition(0)
 		self.lbmotor.setPosition(0)
 		self.myInertia = 0
-		self.cam = camera()
+		self.cam = Camera()
 
 	def drive_forward(self, speed) :
 		self.drive.tankDrive(speed, speed, True)
@@ -82,6 +84,10 @@ class driveTrain(Component):
 		self.lbmotor.setEncPosition(0)
 		self.zeroGyro()
 
+	def rampByRange(self):
+		pass
+
+
 	def turnAngle(self, degrees, speed=0.2):
 		if(self.gyro.getAngle() > degrees+0.25):
 			self.autonTankDrive(-1*speed, speed)
@@ -107,9 +113,13 @@ class driveTrain(Component):
 
 	def findGoal(self, moveType=True):
 		x = 25
+		print("findGoal: " + str(moveType) + "-")
 		if moveType != self.cam.CamState:
+			print("switching-")
 			self.cam.switch()
+		print("made it 1")
 		self.cam.receive()
+		print("made it 2")
 		if x < 25:
 			x += 1
 			self.autonTankDrive(0,0)
@@ -157,16 +167,27 @@ class driveTrain(Component):
 	def convertEncoderRaw(self, selectedEncoderValue):
 		return selectedEncoderValue * self.INCHES_PER_REV
 
+	def getEncoder(self):
+			return self.lfmotor.getPosition()
+
+	def getInRange(self, distance):
+		if(distance>self.MAX_RANGE):
+			self.autonTankDrive(0.75, 0.75)
+		elif(distance<self.MIN_RANGE):
+			self.autonTankDrive(-0.75,-0.75)
+		else:
+			return True
 
 	def centerSide(self, moveType=True):
+		print("Center: " + str(moveType) + "-")
 		if(self.cam.mid_x == None):
 			self.autonTankDrive(0, 0)
 
 			if(self.myInertia > 0):
 				self.myInertia -= 1
 			return False
-		elif(abs(self.cam.mid_x) > camera.DDZ_ROT):	#radians, arbitrary deadzone value
-			if(abs(self.cam.mid_x) > 0.15):
+		elif(abs(self.cam.mid_x - camera.TARGET) > camera.DDZ_ROT):	#radians, arbitrary deadzone value
+			if(abs(self.cam.mid_x - camera.TARGET) > 0.15):
 				spdMag = 0.15
 			else:
 				spdMag = 0.09
@@ -176,7 +197,7 @@ class driveTrain(Component):
 				self.myInertia = 0
 			if(self.myInertia <= 5):
 				self.myInertia += 1
-			spd = math.copysign(spdMag, self.cam.mid_x)#min(max(MIN_ROT_SPD, abs(self.mid_x)), MAX_ROT_SPD), self.mid_x)	#again arbitrary numbers
+			spd = math.copysign(spdMag, self.cam.mid_x - camera.TARGET)#min(max(MIN_ROT_SPD, abs(self.mid_x)), MAX_ROT_SPD), self.mid_x)	#again arbitrary numbers
 			if moveType:	#shooter
 				self.autonTankDrive(spd, -spd)
 			else:	#gears

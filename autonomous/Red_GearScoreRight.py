@@ -1,7 +1,7 @@
 """
 File Author: Will Hescott
 File Creation Date: 2/4/2016
-File Purpose: Score a gear into the 'Main' (Frontmost) gear scoring station on the blue side
+File Purpose: Score a gear into the 'Main' (Frontmost) gear scoring station on the red side
 """
 
 from robotpy_ext.autonomous import StatefulAutonomous, state, timed_state
@@ -13,7 +13,7 @@ from wpilib import SendableChooser
 
 class autonomousModeTestingLowBar(StatefulAutonomous):
 
-    MODE_NAME = 'Blue_GearScoreMiddle'
+    MODE_NAME = 'Red_GearScoreRight'
     DEFAULT = False
     DRIVE_DISTANCE = 60
     #drive = driveTrain
@@ -36,7 +36,7 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
 
     @state()
     def drive_forward(self) :
-        if self.drive.getDistance() < 80:
+        if self.drive.getDistance() < 67:
             self.drive.autonTankDrive(0.5, 0.5)
         else :
             #self.drive.autonTankDrive(0, 0)
@@ -44,22 +44,35 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
                 self.drive.reset()
                 self.next_state('strafe_left')
 
-    @state
+    @state()
+    def turnLeft(self):
+        if(self.drive.turnAngle(-45)):
+            self.next_state('drive_forward')
+
+    @state()
+    def drive_forward(self):
+        if self.drive.getDistance() <30:
+            self.drive.autonTankDrive(0.5, 0.5)
+        else:
+            self.next_state('strafe_right')
+
+
+    @timed_state(first=False, duration=2, next_state='done')
     def strafe_left(self):
-        if not(self.drive.getSensor()==False):
-            self.drive.drive(-0.5, 0, 0)
+        self.drive.drive(-0.5, 0, -0.40)
+
+
+    @state()
+    def strafe_right(self):
+        if self.drive.getSensor():
+            self.drive.drive(0.5, 0, 0)
         else:
             self.drive.reset()
             x=0
             if(x>=150):
-                self.next_state('strafe_right')
+                self.next_state('strafe_left')
             else:
                 x+=1
-
-
-    @timed_state(first=False, duration=2, next_state='done')
-    def strafe_right(self):
-        self.drive.drive(0.5, 0, 0.25)
 
 
     @state()

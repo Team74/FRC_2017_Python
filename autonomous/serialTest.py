@@ -10,7 +10,7 @@ from robotpy_ext.autonomous.selector import AutonomousModeSelector
 from wpilib import SendableChooser
 #from components.armControl import arm
 
-from tthhiinnggyy import Tthhinnggyy
+from camera import Camera
 
 
 class autonomousModeSerialTest(StatefulAutonomous):

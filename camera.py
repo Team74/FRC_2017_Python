@@ -4,6 +4,8 @@ import math
 import serial
 from time import sleep
 
+TARGET = 0.07
+
 DDZ_ROT = 0.03
 MIN_ROT_SPD = 0.04
 MAX_ROT_SPD = 0.3
@@ -31,10 +33,15 @@ class Camera:
 
 	def __init__(self):
 		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
-		#pass
+		pass
 	def receive(self, moveType=True):
+		print("yo 1")
 		self.ser.write("boom ya got waffles\n".encode())
-		ans = self.ser.readline()
+		print("yo 1.5")
+		#ans = self.ser.readline()
+		ans = self.ser.read(100)
+		print("yo 2")
+		print("yoyette: " + str(ans))#ans.decode())
 		if ans:
 			ans = self.uncode(ans.decode())
 			if self.old_x != float(ans[0]):
