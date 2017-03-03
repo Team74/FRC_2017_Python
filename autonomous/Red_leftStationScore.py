@@ -69,11 +69,10 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
         else:
             self.drive.reset()
             x=0
-            if(x==100 or x>100):
+            if(x>=150):
                 self.next_state('strafe_left')
             else:
                 x+=1
-
 
     @state()
     def done(self) :

@@ -60,11 +60,12 @@ class MyRobot(wpilib.SampleRobot):
         #self.opControl.setSpeed() #used for manually setting motor speeds for testing, disable for teleop
         while self.isOperatorControl() and self.isEnabled():
             wpilib.SmartDashboard.putNumber("GyroAngle",self.drive.getGyroAngle())#Putting important information onto the dashboard for reference in teleop
-
+            wpilib.SmartDashboard.putNumber("Encoder Position", self.drive.getEncoder())
 
             '''if self.controller.getButtonB():
                 self.drive.findGoal()
             else:'''
+
             if(self.controller.getButtonA() and self.drive.getSensor()==False):
                 self.drive.drive(0,0,0)
             else:
