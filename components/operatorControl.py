@@ -145,7 +145,7 @@ class opControl(Component):
 
     def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,leftTrigger): #rightBumper= agitator
         #self.modifySpeed(rightTrigger,leftTrigger)
-        print(self.lights)
+        #print(self.lights)
         self.toggleIntake(aButton)
         self.toggleLights(yButton)
         #self.reverseIntake(bButton)
