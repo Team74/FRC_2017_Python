@@ -113,9 +113,7 @@ class driveTrain(Component):
 
 	def findGoal(self, moveType=True):
 		x = 25
-		print("findGoal: " + str(moveType) + "-")
 		if moveType != self.cam.CamState:
-			print("switching-")
 			self.cam.switch()
 		self.cam.receive()
 		if x < 25:
@@ -178,7 +176,6 @@ class driveTrain(Component):
 			return True
 
 	def centerSide(self, moveType=True):
-		print("Center: " + str(moveType) + "-")
 		if(self.cam.mid_x == None):
 			self.autonTankDrive(0, 0)
 
@@ -200,7 +197,7 @@ class driveTrain(Component):
 			if moveType:	#shooter
 				self.autonTankDrive(spd, -spd)
 			else:	#gears
-				self.autonTankDrive(spd, spd)	#forward, back -- gear on side
+				self.autonTankDrive(-spd, -spd)	#forward, back -- gear on side
 			return False
 		self.autonTankDrive(0, 0)
 		if(self.myInertia > 0):

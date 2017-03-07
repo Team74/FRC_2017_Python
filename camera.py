@@ -35,16 +35,12 @@ class Camera:
 		#self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
 		pass
 	def receive(self, moveType=True):
-		print("yo 1")
-		self.ser.write("boom ya got waffles\n".encode())
-		print("yo 1.5")
-		#ans = self.ser.readline()
-		ans = self.ser.read(100)
-		print("yo 2")
-		print("yoyette: " + ans.decode())
+		self.ser.write(("shooter\n" if moveType else "gears\n").encode())
+		ans = self.ser.readline()
+		#ans = self.ser.read(100)
 		if ans:
 			ans = self.uncode(ans.decode())
-			if self.old_x != float(ans[0]):
+			if ans[0] != "" and self.old_x != float(ans[0]):
 				self.old_x = self.mid_x
 				self.mid_x = float(ans[0])
 				self.mid_y = float(ans[1])
@@ -94,11 +90,10 @@ class Camera:
 		return True
 
 	def switch(self):
+		print(self.CamState)
 		self.CamState = not self.CamState
 		self.ser.write("the times they are\n".encode())
 		self.ser.readline()
-
-
 #max(MIN_ROT_SPD, min(MAX_ROT_SPD, abs(self.theta - REF_THETA)))
 '''	def ShootDistance(self):	#I *guarantee* this does *not* work
 		angle = math.arcsin(((REF_TOW_H - REF_CAM_H)/self.distance+4.9*self.distance)/MUZZLE_VELOCITY)
