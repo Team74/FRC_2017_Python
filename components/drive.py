@@ -20,8 +20,8 @@ class driveTrain(Component):
 
 	def __init__(self, robot):
 		super().__init__()
-		self.MAX_RANGE = 90
-		self.MIN_RANGE = 50
+		self.MAX_RANGE = 102
+		self.MIN_RANGE = 60
 		self.INCHES_PER_REV = 2*3.1415926*2
 		self.robot = robot
 		self.gyro = AHRS.create_spi()
@@ -166,12 +166,13 @@ class driveTrain(Component):
 	def getEncoder(self):
 			return self.lfmotor.getPosition()
 
-	def getInRange(self, distance):
-		if(distance>self.MAX_RANGE):
+	def getInRange(self):
+		if(self.cam.distance>self.MAX_RANGE):
 			self.autonTankDrive(0.75, 0.75)
-		elif(distance<self.MIN_RANGE):
+		elif(self.cam.distance<self.MIN_RANGE):
 			self.autonTankDrive(-0.75,-0.75)
 		else:
+			self.autonTankDrive(0,0)
 			return True
 
 	def centerSide(self, moveType=True):

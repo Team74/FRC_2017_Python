@@ -57,10 +57,17 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
                 x+=1
 
 
-    @timed_state(first=False, duration=2, next_state='done')
+    @timed_state(first=False, duration=2, next_state='find_Goal')
     def strafe_right(self):
         self.drive.drive(0.5, 0, 0.25)
 
+    @state
+    def find_Goal(self):
+        if(self.drive.findGoal()):
+            if(self.drive.getInRange()):
+                self.opControl.fire(self.opControl.rampShooter())
+        else:
+            self.next_state('done')
 
     @state()
     def done(self) :
