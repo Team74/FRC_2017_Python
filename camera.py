@@ -32,7 +32,7 @@ class Camera:
 	CamState = True	#default, shooter / false = gears
 
 	def __init__(self):
-		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
+		#self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
 		pass
 	def receive(self, moveType=True):
 		print("yo 1")
@@ -41,7 +41,7 @@ class Camera:
 		#ans = self.ser.readline()
 		ans = self.ser.read(100)
 		print("yo 2")
-		print("yoyette: " + str(ans))#ans.decode())
+		print("yoyette: " + ans.decode())
 		if ans:
 			ans = self.uncode(ans.decode())
 			if self.old_x != float(ans[0]):
@@ -49,8 +49,8 @@ class Camera:
 				self.mid_x = float(ans[0])
 				self.mid_y = float(ans[1])
 				self.theta = float(ans[2])
-				self.distance = float(ans[3])
-				print(str(self.mid_x))
+				self.distance = float(ans[3])*39.37#camera returns distance values in meters, converting to inches to preserve continuity and readability.
+				print(str(self.mid_x))			   #This also allows it to work with all other movement functions, which require a desired distance variable
 				return
 			else:
 				print("no new")

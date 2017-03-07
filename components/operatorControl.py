@@ -34,15 +34,36 @@ class opControl(Component):
         self.flash2 = DigitalOutput(1)
         self.frontIntake = CANTalon(3)
         self.shooterMain = CANTalon(5)
+        self.shooterSlave = CANTalon(8)
         self.shooterFeed = CANTalon(4)
-        self.climberMotor = CANTalon(8) # This may not be nessecary depending upon how we decide to deploy the climber
         self.shooterMain.set(self.shooterSpeed)
+        self.climberMotor = CANTalon(9)
+
+        self.shooterMain.configEncoderCodesPerRev(4096)
+        self.shooterMain.configNominalOutputVoltage(+0.0, -0.0)
+        self.shooterMain.configPeakOutputVoltage(+12.0, -12.0)
+        self.shooterMain.setAllowableClosedLoopErr(0)
+        self.shooterMain.setProfile(0)
+        self.shooterMain.setF(0.0)
+        self.shooterMain.setP(0.01)
+        self.shooterMain.setI(0.0)
+        self.shooterMain.setD(0.0)
+        self.shooterMain.setControlMode(CANTalon.ControlMode.Speed)
+        self.shooterMain.set(5)
+
+        self.shooterSlave.setControlMode(CANTalon.ControlMode.Follower)
+        self.shooterSlave.set(5)
+
+        self.shooterMain.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+        self.shooterMain.setEncPosition(CANTalon.FeedbackDevice.PulseWidth)
         '''
         self.frontIntake.enableBrakeMode(True)
         self..enableBrakeMode(True)
         self.shooterMain.enableBrakeMode(True)
         self.shooterFeed.enableBrakeMode(True)
+        '''
         self.climberMotor.enableBrakeMode(True)
+        '''
         self.releaseMotor.enableBrakeMode(True)
 
     def getSpeed(self):
@@ -61,6 +82,12 @@ class opControl(Component):
     def setSpeed(self):
         self.shooterSpeed = 0.5
         '''
+    def rampShooter(self):#this method is supposed to ramp the motor speed based on our distance away from the target. Ideally we can use this to shoot on the move
+        shooterSpeed=self.cam.distance/100#the theoretical proportion between motor
+        #input and distance from goal. When implementing be sure to account for a
+        #fall off point at which point the motor doesnt move fast enough to get a ball
+        #to the goal. Our current range is .6 to 1, and 60" to 102" but that requires
+        #more testing
 
     def getShooter(self):
         return self.shooterToggle
@@ -71,10 +98,10 @@ class opControl(Component):
         elif(self.wait<=0):
             if(aButton and self.intakeToggle == False):
                 self.intakeToggle = True
-                self.wait = 20
+                self.wait = 35
             elif(aButton and self.intakeToggle == True):
                 self.intakeToggle = False
-                self.wait = 20
+                self.wait = 35
             else:
                 pass
         if(self.intakeToggle == True):
@@ -117,10 +144,10 @@ class opControl(Component):
         elif(self.wait<=0):
             if(xButton and self.shooterToggle == False):
                 self.shooterToggle = True
-                self.wait = 20
+                self.wait = 35
             elif(xButton and self.shooterToggle == True):
                 self.shooterToggle = False
-                self.wait = 20
+                self.wait = 35
             else:
                 pass
             if(self.shooterToggle == True):
@@ -129,8 +156,8 @@ class opControl(Component):
             elif(self.shooterToggle == False):
                 self.shooterMain.set(0)
 
-    def fire(self, rightTrigger):
-            self.shooterFeed.set(int(rightTrigger))
+    def fire(self, speedValue):#accepts input from 0 to 1,
+            self.shooterFeed.set(int(speedValue))#usually passing it controller #'s
 
     def singleFire(self,leftTrigger):#single ball fire for testing
         if(leftTrigger and self.wait3 < 30):

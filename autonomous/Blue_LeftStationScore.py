@@ -40,24 +40,29 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
             self.drive.autonTankDrive(0.5, 0.5)
         else :
             #self.drive.autonTankDrive(0, 0)
-            if(self.drive.turnAngle(-90, .3)):
-                self.drive.reset()
-                self.next_state('strafe_left')
+            self.drive.reset()
+            self.next_state('turnLeft')
 
     @state()
     def turnLeft(self):
         if(self.drive.turnAngle(-45)):
-            self.next_state('drive_forward')
+            self.next_state('drive_forward2')
 
     @state()
-    def drive_forward(self):
+    def drive_forward2(self):
         if self.drive.getDistance() <30:
             self.drive.autonTankDrive(0.5, 0.5)
         else:
-            self.next_state('strafe_right')
+            self.next_state('strafe_even')
 
+    @state
+    def strafe_even(self):
+        if(self.drive.findGoal(False)==False):
+            pass
+        else:
+            self.next_state(strafe_right)
 
-    @timed_state(first=False, duration=2, next_state='done')
+    @timed_state(first=False, duration=2, next_state='find_Goal')
     def strafe_left(self):
         self.drive.drive(-0.5, 0, -0.40)
 
@@ -73,6 +78,14 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
                 self.next_state('strafe_left')
             else:
                 x+=1
+
+    @state
+    def find_Goal(self):
+        if(self.drive.findGoal()):
+            if(self.drive.getInRange()):
+                self.opControl.fire(self.opControl.rampShooter())
+        else:
+            self.next_state('done')
 
 
     @state()
