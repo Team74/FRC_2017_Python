@@ -15,7 +15,10 @@ class opControl(Component):
 
     def __init__(self, robot):
         super().__init__()
-
+        self.MAX_SPEED = 1
+        self.MIN_SPEED = .65
+        self.MAX_RANGE = 90
+        self.MIN_RANGE = 50
         self.wait = 0
         self.wait2 = 0
         self.wait3 = 0
@@ -85,16 +88,16 @@ class opControl(Component):
         elif(self.wait2<=0):
             if(yButton and self.lights == False):
                 #self.flash1.set(Relay.Value.kOn)
-                self.flash1.set(Relay.Value.kOn)
-                self.flash2.set(True)
-                self.wait2 = 25
+                self.flash1.set(Relay.Value.kForward)#using spike H-bridge relays, need tp use forward instead of on because of the way the modes function
+                #self.flash2.set(True)
+                self.wait2 = 50
                 print ('Lights_On')
                 self.lights = True
             elif(yButton and self.lights == True):
                 #self.flash1.set(Relay.Value.Off)
                 self.flash1.set(Relay.Value.kOff)
-                self.flash2.set(False)
-                self.wait2 = 25
+                #self.flash2.set(False)
+                self.wait2 = 50
                 print ('Lights_Off')
                 self.lights = False
             else:
@@ -106,7 +109,9 @@ class opControl(Component):
         else:
             pass
             '''
-    def toggleShooter(self, xButton):#switches the front motors on or off
+    def toggleShooter(self, xButton, speed=None):#switches the front motors on or off
+        if(speed==None):
+            speed = self.shooterSpeed
         if(self.wait>0):
             self.wait-=1
         elif(self.wait<=0):
@@ -119,7 +124,7 @@ class opControl(Component):
             else:
                 pass
             if(self.shooterToggle == True):
-                self.shooterMain.set(self.shooterSpeed)
+                self.shooterMain.set(speed)
 
             elif(self.shooterToggle == False):
                 self.shooterMain.set(0)
@@ -140,7 +145,7 @@ class opControl(Component):
 
     def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,leftTrigger): #rightBumper= agitator
         #self.modifySpeed(rightTrigger,leftTrigger)
-        print(self.lights)
+        #print(self.lights)
         self.toggleIntake(aButton)
         self.toggleLights(yButton)
         #self.reverseIntake(bButton)

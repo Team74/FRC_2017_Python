@@ -13,7 +13,7 @@ from wpilib import SendableChooser
 
 class autonomousModeTestingLowBar(StatefulAutonomous):
 
-    MODE_NAME = 'Blue_GearScoreLeft'
+    MODE_NAME = 'Blue_GearScoreRight'
     DEFAULT = False
     DRIVE_DISTANCE = 60
     #drive = driveTrain
@@ -46,7 +46,7 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
 
     @state()
     def turnLeft(self):
-        if(self.drive.turnAngle(-45))
+        if(self.drive.turnAngle(-45)):
             self.next_state('drive_forward')
 
     @state()
@@ -59,7 +59,7 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
 
     @timed_state(first=False, duration=2, next_state='done')
     def strafe_left(self):
-        self.drive.drive(-0.5, 0, -0.5)
+        self.drive.drive(-0.5, 0, -0.75)
 
 
     @state()
@@ -69,11 +69,10 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
         else:
             self.drive.reset()
             x=0
-            if(x==100 or x>100):
+            if(x>=150):
                 self.next_state('strafe_left')
             else:
                 x+=1
-
 
     @state()
     def done(self) :
