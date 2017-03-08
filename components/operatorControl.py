@@ -83,7 +83,9 @@ class opControl(Component):
         self.shooterSpeed = 0.5
         '''
     def rampShooter(self):#this method is supposed to ramp the motor speed based on our distance away from the target. Ideally we can use this to shoot on the move
-        shooterSpeed=self.cam.distance/100#the theoretical proportion between motor
+        return shooterSpeed = (1 - 0.716)/(126 - 77)*(self.cam.distance - 126) + 1      #Converted for us, see camera.py
+
+        #the theoretical proportion between motor
         #input and distance from goal. When implementing be sure to account for a
         #fall off point at which point the motor doesnt move fast enough to get a ball
         #to the goal. Our current range is .6 to 1, and 60" to 102" but that requires
@@ -158,6 +160,7 @@ class opControl(Component):
 
     def fire(self, speedValue):#accepts input from 0 to 1,
             self.shooterFeed.set(int(speedValue))#usually passing it controller #'s
+            self.shooterSpeed = self.rampShooter()
 
     def singleFire(self,leftTrigger):#single ball fire for testing
         if(leftTrigger and self.wait3 < 30):

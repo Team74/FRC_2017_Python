@@ -36,7 +36,7 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
 
     @state()
     def drive_forward(self) :
-        if self.drive.getDistance() < 67:
+        if self.drive.getDistance() < 60:
             self.drive.autonTankDrive(0.5, 0.5)
         else :
             #self.drive.autonTankDrive(0, 0)
