@@ -70,15 +70,26 @@ class MyRobot(wpilib.SampleRobot):
                 self.drive.drive(0,0,0)
             else:
                 if(self.controller.getRightTrigger()==True):#This statement tells the drivetrain exclusively track the target and ignore other movement commands. It is faster than the moving and
-                    if(self.drive.findGoal()):#shooting system and more accurate. we do trade off mobility for it however, so it is important to have both
-                        self.drive.getInRange()#drives into range of the goal
-                elif self.controller.getButtonY():
-                    self.drive.findGoal(False)	#uses the other type
+                    if(not self.drive.curSearch):
+                        self.drive.curSearch = True
+                        #trigger on first button press here
+                    if(self.drive.curSearch_center != False):
+                        if(self.drive.turnAngle(self.drive.curSearch_center + self.drive.offsetRotate(self.cam.distance))):
+				pass #ready to shoot. Maybe tell the drivers that you're good
+                    elif(self.drive.findGoal()):#shooting system and more accurate. we do trade off mobility for it however, so it is important to have both
+                        if(self.drive.getInRange())#drives into range of the goal
+                            self.drive.curSearch_center = self.drive.gyro.getAngle()
                 else:
-                    if(self.controller.getButtonB()):
-                        self.drive.findGoal()
-                    self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
-                    #[cont.] the drive functions file. It also wraps the values with the scaleInput method which puts the input on an exponential curve, which gives the driver both fine-tuned control and power if you need it
+                    if(self.drive.curSearch):
+                        self.drive.curSearch = False
+                        self.drive.curSearch_center = False
+	            if self.controller.getButtonY():
+	                self.drive.findGoal(False)	#uses the other type
+	            else:
+	                if(self.controller.getButtonB()):
+	                    self.drive.findGoal()
+	                self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
+	                #[cont.] the drive functions file. It also wraps the values with the scaleInput method which puts the input on an exponential curve, which gives the driver both fine-tuned control and power if you need it
             if(self.controller.getButtonX() == True):#This just allows the driver to zero the gyro out. It drifts between 30 and 60 degrees on every 360 degree rotation. It's  a hardare problem so this is the best we can  do
                 self.drive.zeroGyro()
 

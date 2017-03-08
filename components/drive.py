@@ -56,6 +56,8 @@ class driveTrain(Component):
 		self.lbmotor.setPosition(0)
 		self.myInertia = 0
 		self.cam = Camera()
+		self.curSearch = False #Represents whether we are currently using shooter vision; used to trigger on-presss and -release
+		self.curSearch_center = False #Reps. whether we are centered; resets on release of vision button (right trigger)
 
 	def drive_forward(self, speed) :
 		self.drive.tankDrive(speed, speed, True)
@@ -112,12 +114,7 @@ class driveTrain(Component):
 			#oh what fun it is to ride
 
 	def findGoal(self, moveType=True):
-		x = 25
 		self.cam.receive()
-		if x < 25:
-			x += 1
-			self.autonTankDrive(0,0)
-			return False
 		if self.centerSide(moveType):#and self.cam.centerLine() :	#this works because of short-circuiting #in a one-horse open sleigh
 			self.reset()
 			x = 0
@@ -201,3 +198,9 @@ class driveTrain(Component):
 		if(self.myInertia > 0):
 			self.myInertia -= 1
 		return True
+
+	def offsetRotate(self, dist_HG, dist_CYBRG=12, dist_OFF=5.125):
+		return math.arctan(dist_OFF/(dist_CYBRG + dist_HG))
+
+
+
