@@ -36,7 +36,7 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
 
     @state()
     def drive_forward(self) :
-        if self.drive.getDistance() < 80:
+        if self.drive.getDistance() < 70:
             self.drive.autonTankDrive(0.5, 0.5)
         else :
             #self.drive.autonTankDrive(0, 0)
@@ -46,7 +46,7 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
 
     @state
     def strafe_left(self):
-        if not(self.drive.getSensor()==False):
+        if self.drive.getSensor():
             self.drive.drive(-0.5, 0, 0)
         else:
             self.drive.reset()
@@ -57,7 +57,7 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
                 x+=1
 
 
-    @timed_state(first=False, duration=2, next_state='find_Goal')
+    @timed_state(first=False, duration=1, next_state='find_Goal')
     def strafe_right(self):
         self.drive.drive(0.5, 0, 0.25)
 

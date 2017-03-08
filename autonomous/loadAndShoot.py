@@ -42,35 +42,26 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
             self.drive.reset()
             self.next_state('strafeRight')
 
-    @timed_state(first=False, duration=1, next_state='strafeLeft')
+    @timed_state(first=False, duration=1, next_state='getInRange')
     def strafeRight(self):
         self.drive.drive(0, 1, 0)
 
-    @timed_state(first=False, duration=1, next_state='getInRange')
-    def strafeLeft(self):
-        self.drive.drive(0, -1, 0)
-
     @state()
     def getInRange(self):
-        if self.drive.getDistance < 35:
-            self.drive.autonTankDrive(.5, .5)
+        if(self.drive.findGoal()):
+            if(self.drive.getInRange()):
         else:
             self.drive.reset()
             self.next_state('fire')
 
-    @timed_state(first=False, duration=7.5, next_state='done')
+    @timed_state(first=False, duration=15, next_state='done')
     def fire(self) :
         self.drive.reset()
         if(self.opControl.getShooter()):
-            self.fire = True
-            while(fire):
-                self.opControl.fire(True)
+            self.opControl.fire(self.opControl.rampShooter)
         else:
             self.opControl.toggleShooter()
-            self.fire = True
-            while(fire):
-                self.opControl.fire(True)
-
+            self.opControl.fire(self.opControl.rampShooter)
 
     @state()
     def done(self) :

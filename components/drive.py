@@ -20,8 +20,8 @@ class driveTrain(Component):
 
 	def __init__(self, robot):
 		super().__init__()
-		self.MAX_RANGE = 102
-		self.MIN_RANGE = 60
+		self.MAX_RANGE = 126
+		self.MIN_RANGE = 77
 		self.INCHES_PER_REV = 2*3.1415926*2
 		self.robot = robot
 		self.gyro = AHRS.create_spi()
