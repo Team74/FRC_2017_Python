@@ -34,10 +34,10 @@ class opControl(Component):
         self.flash2 = DigitalOutput(1)
         self.frontIntake = CANTalon(3)
         self.shooterMain = CANTalon(5)
-        self.shooterSlave = CANTalon(8)
+        self.shooterSlave = CANTalon(9)
         self.shooterFeed = CANTalon(4)
         self.shooterMain.set(self.shooterSpeed)
-        self.climberMotor = CANTalon(9)
+        self.climberMotor = CANTalon(8)
 
         self.shooterMain.configEncoderCodesPerRev(4096)
         self.shooterMain.configNominalOutputVoltage(+0.0, -0.0)

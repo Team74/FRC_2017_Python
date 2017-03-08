@@ -4,7 +4,7 @@ import math
 import serial
 from time import sleep
 
-TARGET = 0.07
+TARGET = 0
 
 DDZ_ROT = 0.03
 MIN_ROT_SPD = 0.04

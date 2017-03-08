@@ -112,12 +112,7 @@ class driveTrain(Component):
 			#oh what fun it is to ride
 
 	def findGoal(self, moveType=True):
-		x = 25
 		self.cam.receive()
-		if x < 25:
-			x += 1
-			self.autonTankDrive(0,0)
-			return False
 		if self.centerSide(moveType):#and self.cam.centerLine() :	#this works because of short-circuiting #in a one-horse open sleigh
 			self.reset()
 			x = 0
