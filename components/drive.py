@@ -113,8 +113,6 @@ class driveTrain(Component):
 
 	def findGoal(self, moveType=True):
 		x = 25
-		if moveType != self.cam.CamState:
-			self.cam.switch()
 		self.cam.receive()
 		if x < 25:
 			x += 1

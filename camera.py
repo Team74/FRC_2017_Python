@@ -32,7 +32,7 @@ class Camera:
 	CamState = True	#default, shooter / false = gears
 
 	def __init__(self):
-		#self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
+		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
 		pass
 	def receive(self, moveType=True):
 		self.ser.write(("shooter\n" if moveType else "gears\n").encode())
@@ -81,30 +81,11 @@ class Camera:
 					number += char
 		return stuff
 
-
-	def centerLine(self):
-		if(abs(self.distance - REF_DIST) > DDZ_MOV):	#meters, arbitrary deadzone value
-			spd = math.copysign(0.1, self.distance - REF_DIST)#max(MIN_MOV_SPD, abs(distance))*math.copysign(1.0, distance)
-			self.autonTankDrive(spd,spd)
-			return False
-		return True
-
-	def switch(self):
-		print(self.CamState)
-		self.CamState = not self.CamState
-		self.ser.write("the times they are\n".encode())
-		self.ser.readline()
-#max(MIN_ROT_SPD, min(MAX_ROT_SPD, abs(self.theta - REF_THETA)))
 '''	def ShootDistance(self):	#I *guarantee* this does *not* work
-		angle = math.arcsin(((REF_TOW_H - REF_CAM_H)/self.distance+4.9*self.distance)/MUZZLE_VELOCITY)
+		MUZZLE_VELOCITY = ((REF_TOW_H - REF_CAM_H)/self.distance+4.9*self.distance)/math.sin(angle)
 		#MAGIC -- set the shooting apparatus angle
 		#MAGIC -- call a function that spins the shooting wheels
 
 		#note that this function may not work on the grounds of returning angles beyond our operational capabilities
 		#it can be changed, but it's not important anyway
-'''
-'''
-thng.receive()
-if thng.centerSide() and thng.centerLine() :	#this works because of short-circuiting
-	HooBoyShoot()
 '''
