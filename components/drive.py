@@ -106,7 +106,7 @@ class driveTrain(Component):
 			return True
 		return False
 
-	def visionLineUp(self):
+	def visionLineUp(self):	# I don't think we use this method. See findGoal.
 		self.cam.receive()
 		if self.cam.centerSide():#and self.cam.centerLine() :	#this works because of short-circuiting
 			print("hooboyshoot")
@@ -173,7 +173,6 @@ class driveTrain(Component):
 	def centerSide(self, moveType=True):
 		if(self.cam.mid_x == None):
 			self.autonTankDrive(0, 0)
-
 			if(self.myInertia > 0):
 				self.myInertia -= 1
 			return False
@@ -200,7 +199,8 @@ class driveTrain(Component):
 		return True
 
 	def offsetRotate(self, dist_HG, dist_CYBRG=12, dist_OFF=5.125):
-		return math.arctan(dist_OFF/(dist_CYBRG + dist_HG))
-
+		theta = math.arctan(dist_OFF/(dist_CYBRG + dist_HG))
+		return theta + math.arctan( (dist_OFF*math.cos(theta) - dist_CYBRG*math.sin(theta) ) / (dist_CYBRG + dist_HG - dist_OFF*sin(theta) - dist_CYBRG*cos(theta)) )
+		#So this is actually BS, it returns the angle the camera should see -- NOT the angle the robot should turn, that's just theta alone.
 
 
