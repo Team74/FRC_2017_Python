@@ -9,6 +9,7 @@ import wpilib
 from wpilib import Encoder, Timer, RobotDrive, Spark, DigitalOutput, Relay
 from ctre.cantalon import CANTalon
 from wpilib.interfaces import Gyro
+from camera import Camera
 from . import Component
 
 class opControl(Component):
@@ -28,6 +29,7 @@ class opControl(Component):
         self.shooterToggle = True
         self.lights = True
         self.shooterSpeed = .65
+        self.cam = Camera()
 
         #self.flash1 = DigitalOutput(0)
         self.flash1 = Relay(0)
@@ -83,8 +85,11 @@ class opControl(Component):
         self.shooterSpeed = 0.5
         '''
     def rampShooter(self):#this method is supposed to ramp the motor speed based on our distance away from the target. Ideally we can use this to shoot on the move
-        return shooterSpeed = (1 - 0.716)/(126 - 77)*(self.cam.distance - 126) + 1      #Converted for us, see camera.py
-
+        if(self.cam.distance != None):
+            self.shooterSpeed = (1 - 0.716)/(126 - 77)*self.cam.distance - 126 + 1#Converted for us, see camera.py
+            return self.shooterSpeed
+        else:
+            return self.shooterSpeed
         #the theoretical proportion between motor
         #input and distance from goal. When implementing be sure to account for a
         #fall off point at which point the motor doesnt move fast enough to get a ball

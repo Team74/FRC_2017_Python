@@ -32,7 +32,7 @@ class Camera:
 	CamState = True	#default, shooter / false = gears
 
 	def __init__(self):
-		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
+		#self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
 		pass
 	def receive(self, moveType=True):
 		self.ser.write(("shooter\n" if moveType else "gears\n").encode())
@@ -80,6 +80,7 @@ class Camera:
 				else:
 					number += char
 		return stuff
+	
 
 '''	def ShootDistance(self):	#I *guarantee* this does *not* work
 		MUZZLE_VELOCITY = ((REF_TOW_H - REF_CAM_H)/self.distance+4.9*self.distance)/math.sin(angle)

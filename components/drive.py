@@ -67,7 +67,7 @@ class driveTrain(Component):
 		self.rbmotor.set(rightSpeed)
 
 	def getSensor(self):
-			return self.distanceSensor.get()
+		return self.distanceSensor.get()
 
 	def reset(self):
 		self.rfmotor.set(0)
@@ -95,10 +95,8 @@ class driveTrain(Component):
 		elif(self.gyro.getAngle() < degrees-0.25):
 			self.autonTankDrive(speed, -1*speed)
 			print(self.gyro.getAngle())
-			print('turningRight')
 		elif(self.gyro.getAngle() <= degrees-0.25):
 			self.autonTankDrive(-1*speed, speed)
-			print('turningLeft')
 			print(self.gyro.getAngle())
 		else:
 			return True
@@ -107,9 +105,7 @@ class driveTrain(Component):
 	def visionLineUp(self):
 		self.cam.receive()
 		if self.cam.centerSide():#and self.cam.centerLine() :	#this works because of short-circuiting
-			print("hooboyshoot")
 			self.reset()
-			#oh what fun it is to ride
 
 	def findGoal(self, moveType=True):
 		self.cam.receive()
@@ -153,10 +149,11 @@ class driveTrain(Component):
 				+ self.convertEncoderRaw(abs(self.lbmotor.getPosition())))/4
 		#detirmines how many ticks the encoder has processed
 		#converts ticks from getMotorDistance into inches
+
 	def convertEncoderRaw(self, selectedEncoderValue):
 		return selectedEncoderValue * self.INCHES_PER_REV
 
-	def getEncoder(self):
+	def getEncoder(self):#function used in shooter testing, obselete on main robot but useful elsewhere
 			return self.lfmotor.getPosition()
 
 	def getInRange(self):
@@ -171,7 +168,6 @@ class driveTrain(Component):
 	def centerSide(self, moveType=True):
 		if(self.cam.mid_x == None):
 			self.autonTankDrive(0, 0)
-
 			if(self.myInertia > 0):
 				self.myInertia -= 1
 			return False

@@ -50,6 +50,7 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
     def getInRange(self):
         if(self.drive.findGoal()):
             if(self.drive.getInRange()):
+                pass
         else:
             self.drive.reset()
             self.next_state('fire')
