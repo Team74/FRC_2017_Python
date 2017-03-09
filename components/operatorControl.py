@@ -83,7 +83,7 @@ class opControl(Component):
         self.shooterSpeed = 0.5
         '''
     def rampShooter(self):#this method is supposed to ramp the motor speed based on our distance away from the target. Ideally we can use this to shoot on the move
-        return shooterSpeed = (1 - 0.716)/(126 - 77)*(self.cam.distance - 126) + 1      #Converted for us, see camera.py
+        return (1 - 0.716)/(126 - 77)*(self.cam.distance - 126) + 1      #Converted for us, see camera.py
 
         #the theoretical proportion between motor
         #input and distance from goal. When implementing be sure to account for a
