@@ -60,7 +60,7 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
         if(self.drive.findGoal(False)==False):
             pass
         else:
-            self.next_state(strafe_right)
+            self.next_state('strafe_right')
 
     @timed_state(first=False, duration=2, next_state='find_Goal')
     def strafe_left(self):
