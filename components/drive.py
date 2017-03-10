@@ -29,6 +29,7 @@ class driveTrain(Component):
 		self.intakeOn = False
 		self.intakeSpeed = .5
 		self.i = 1
+		self.savedDistance = 0
 		self.lfmotor = CANTalon(7)#7#2
 		self.lbmotor = CANTalon(6)#6#1
 		self.rfmotor = CANTalon(1)#1#3
@@ -110,11 +111,15 @@ class driveTrain(Component):
 			self.reset()
 
 	def findGoal(self, moveType=True):
+		print("haha 1")
 		self.cam.receive()
+		print("haha 2")
 		if self.centerSide(moveType):#and self.cam.centerLine() :	#this works because of short-circuiting #in a one-horse open sleigh
+			print("haha 3")
 			self.reset()
 			x = 0
 			return True
+		print("haha 4")
 		return False
 
 	def drive(self, leftX, leftY, rightX):
@@ -193,11 +198,13 @@ class driveTrain(Component):
 		self.autonTankDrive(0, 0)
 		if(self.myInertia > 0):
 			self.myInertia -= 1
+		self.savedDistance = self.cam.distance
 		return True
 
+	def getCamDistance(self):
+		return self.savedDistance
+
 	def offsetRotate(self, dist_HG, dist_CYBRG=12, dist_OFF=5.125):
-		theta = math.arctan(dist_OFF/(dist_CYBRG + dist_HG))
-		return theta + math.arctan( (dist_OFF*math.cos(theta) - dist_CYBRG*math.sin(theta) ) / (dist_CYBRG + dist_HG - dist_OFF*sin(theta) - dist_CYBRG*cos(theta)) )
+		theta = math.atan(dist_OFF/(dist_CYBRG + dist_HG))
+		return theta + math.atan( (dist_OFF*math.cos(theta) - dist_CYBRG*math.sin(theta) ) / (dist_CYBRG + dist_HG - dist_OFF*math.sin(theta) - dist_CYBRG*math.cos(theta)) )
 		#So this is actually BS, it returns the angle the camera should see -- NOT the angle the robot should turn, that's just theta alone.
-
-

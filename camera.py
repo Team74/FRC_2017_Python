@@ -33,15 +33,21 @@ class Camera:
 	CamState = True	#default, shooter / false = gears
 
 	def __init__(self):
-		#self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
+		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
 		pass
 	def receive(self, moveType=True):
+		print("boog 1")
 		self.ser.write(("shooter\n" if moveType else "gears\n").encode())
+		print("boog 2")
 		ans = self.ser.readline()
+		print("boog 3")
+		print("boog 3.5 --" + ans.decode())
 		#ans = self.ser.read(100)
 		if ans:
+			print("boog 4")
 			ans = self.uncode(ans.decode())
 			if ans[0] != "" and self.old_x != float(ans[0]):
+				print("boog 5")
 				self.old_x = self.mid_x
 				self.mid_x = float(ans[0])
 				self.mid_y = float(ans[1])
@@ -57,6 +63,7 @@ class Camera:
 		self.mid_y = None
 		self.theta = None
 		self.distance = None
+		print("boog 6")
 		#print("skip")
 
 	def uncode(self, string):
@@ -81,7 +88,7 @@ class Camera:
 				else:
 					number += char
 		return stuff
-	
+
 
 '''	def ShootDistance(self):	#I *guarantee* this does *not* work
 		MUZZLE_VELOCITY = ((REF_TOW_H - REF_CAM_H)/self.distance+4.9*self.distance)/math.sin(angle)

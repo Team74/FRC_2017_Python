@@ -14,6 +14,7 @@ from components.operatorControl import opControl
 from components.drive import driveTrain
 from ctre.cantalon import CANTalon
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
+import camera
 
 ## from wpilib import USBCamera, CameraServer
 
@@ -26,7 +27,7 @@ class MyRobot(wpilib.SampleRobot):
         self.controller2 = XboxController(1)
         self.drive = driveTrain(self)#initialising a drivetrain objet
         self.drive.reset()
-        self.opControl = opControl(self)#initialising a operator control object
+        self.opControl = opControl(self, self.drive)#initialising a operator control object
         self.dashTimer = wpilib.Timer()     # Timer for SmartDashboard updating
         self.dashTimer.start()
 
@@ -70,28 +71,36 @@ class MyRobot(wpilib.SampleRobot):
                 self.drive.drive(0,0,0)
             else:
                 if(self.controller.getRightTrigger()==True):#This statement tells the drivetrain exclusively track the target and ignore other movement commands. It is faster than the moving and
+                    print("yo 1")
                     if(not self.drive.curSearch):
+                        print("yo 2")
                         self.drive.curSearch = True    #curSearch represents whether the trigger is pressed
                         #trigger on first button press here
-                    elif(self.drive.findGoal()):#shooting system and more accurate. we do trade off mobility for it however, so it is important to have both
-                        if(self.drive.cursearch_center): #cursearch_center represents whether we've locked on camera and are currently turning to the appropriate offset rotation, or are still centering on the camera
+                    if(self.drive.findGoal()):#shooting system and more accurate. we do trade off mobility for it however, so it is important to have both
+                        print("yo 3")
+                        if(self.drive.curSearch_center): #cursearch_center represents whether we've locked on camera and are currently turning to the appropriate offset rotation, or are still centering on the camera
+                            print("yo 4")
                             pass #ready to shoot
                         elif(self.drive.getInRange()):#drives into range of the goal
-                            self.cam.TARGET = self.drive.offsetRotate(self.cam.distance) / self.cam.FOV_X * 2
+                            print("yo 5")
+                            self.drive.cam.TARGET = self.drive.offsetRotate(self.drive.cam.distance) / camera.FOV_X * 2
                             self.drive.curSearch_center = True
                 else:
+                    print("yo 6")
                     if(self.drive.curSearch or self.drive.curSearch_center):
+                        print("yo 7")
                         self.drive.curSearch = False
                         self.drive.curSearch_center = False
-                        self.cam.TARGET = 0
+                        self.drive.cam.TARGET = 0
                     if self.controller.getButtonY():
                         self.drive.findGoal(False)    #uses the other type
-                        self.cam.TARGET = 0
+                        self.drive.cam.TARGET = 0
                     else:
+                        print("yo 8")
                         if(self.controller.getButtonB()):
-                            self.cam.TARGET = 0.07
+                            self.drive.cam.TARGET = 0.07
                             self.drive.findGoal()
-                            self.cam.TARGET = 0
+                            self.drive.cam.TARGET = 0
                         self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
                         #[cont.] the drive functions file. It also wraps the values with the scaleInput method which puts the input on an exponential curve, which gives the driver both fine-tuned control and power if you need it
             if(self.controller.getButtonX() == True):#This just allows the driver to zero the gyro out. It drifts between 30 and 60 degrees on every 360 degree rotation. It's  a hardare problem so this is the best we can  do

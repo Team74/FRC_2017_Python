@@ -11,10 +11,11 @@ from ctre.cantalon import CANTalon
 from wpilib.interfaces import Gyro
 from camera import Camera
 from . import Component
+from . import drive
 
 class opControl(Component):
 
-    def __init__(self, robot):
+    def __init__(self, robot, drive):
         super().__init__()
         self.MAX_SPEED = 1
         self.MIN_SPEED = .65
@@ -28,15 +29,17 @@ class opControl(Component):
         self.intakeToggle = False
         self.shooterToggle = True
         self.lights = True
-        self.shooterSpeed = .65
+        self.shooterSpeed = 6000
         self.cam = Camera()
+
+        self.drive = drive
 
         #self.flash1 = DigitalOutput(0)
         self.flash1 = Relay(0)
-        self.flash2 = DigitalOutput(1)
+        self.flash2 = Relay(1)
         self.frontIntake = CANTalon(3)
-        self.shooterMain = CANTalon(5)
-        self.shooterSlave = CANTalon(9)
+        self.shooterMain = CANTalon(9)
+        self.shooterSlave = CANTalon(5)
         self.shooterFeed = CANTalon(4)
         self.shooterMain.set(self.shooterSpeed)
         self.climberMotor = CANTalon(8)
@@ -51,10 +54,10 @@ class opControl(Component):
         self.shooterMain.setI(0.0)
         self.shooterMain.setD(0.0)
         self.shooterMain.setControlMode(CANTalon.ControlMode.Speed)
-        self.shooterMain.set(5)
+        self.shooterMain.set(0)
 
         self.shooterSlave.setControlMode(CANTalon.ControlMode.Follower)
-        self.shooterSlave.set(5)
+        self.shooterSlave.set(9)
 
         self.shooterMain.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
         self.shooterMain.setEncPosition(CANTalon.FeedbackDevice.PulseWidth)
@@ -85,8 +88,8 @@ class opControl(Component):
         self.shooterSpeed = 0.5
         '''
     def rampShooter(self):#this method is supposed to ramp the motor speed based on our distance away from the target. Ideally we can use this to shoot on the move
-        if(self.cam.distance != None):
-            self.shooterSpeed = (1 - 0.716)/(126 - 77)*self.cam.distance - 126 + 1#Converted for us, see camera.py
+        if(self.drive.getCamDistance() != None):
+            self.shooterSpeed = ((1 - 0.716)/(126 - 77)*(self.drive.getCamDistance() - 126) + 1)*6700#Converted for us, see camera.py
             return self.shooterSpeed
         else:
             return self.shooterSpeed
@@ -123,14 +126,14 @@ class opControl(Component):
             if(yButton and self.lights == False):
                 #self.flash1.set(Relay.Value.kOn)
                 self.flash1.set(Relay.Value.kForward)#using spike H-bridge relays, need tp use forward instead of on because of the way the modes function
-                #self.flash2.set(True)
+                self.flash2.set(Relay.Value.kForward)
                 self.wait2 = 50
                 print ('Lights_On')
                 self.lights = True
             elif(yButton and self.lights == True):
                 #self.flash1.set(Relay.Value.Off)
                 self.flash1.set(Relay.Value.kOff)
-                #self.flash2.set(False)
+                self.flash2.set(Rely.Value.kOff)
                 self.wait2 = 50
                 print ('Lights_Off')
                 self.lights = False
@@ -163,9 +166,11 @@ class opControl(Component):
             elif(self.shooterToggle == False):
                 self.shooterMain.set(0)
 
-    def fire(self, speedValue):#accepts input from 0 to 1,
-            self.shooterFeed.set(int(speedValue))#usually passing it controller #'s
-            self.shooterSpeed = self.rampShooter()
+    def fire(self, speedValue):#toggles indexer, ramps motor based on distance
+            self.shooterFeed.set(int(speedValue))
+            print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + str(self.rampShooter()))
+            if self.rampShooter != None:
+                self.shooterMain.set(int(self.rampShooter()))
 
     def singleFire(self,leftTrigger):#single ball fire for testing
         if(leftTrigger and self.wait3 < 30):
@@ -175,7 +180,7 @@ class opControl(Component):
             self.shooterFeed.set(0)
 
     def climb(self, climberStick):#using a stick because we ran out of buttons on the controller
-        self.climberMotor.set(climberStick)
+        self.climberMotor.set(abs(climberStick))
 
 
     def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,leftTrigger): #rightBumper= agitator
