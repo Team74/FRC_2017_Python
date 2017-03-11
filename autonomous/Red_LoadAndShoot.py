@@ -13,7 +13,7 @@ from wpilib import SendableChooser
 
 class autonomousModeTestingLowBar(StatefulAutonomous):
 
-    MODE_NAME = 'Blue_loadAndShoot'
+    MODE_NAME = 'Red_loadAndShoot'
     DEFAULT = False
     #drive = driveTrain
     chooser = SendableChooser()
@@ -40,11 +40,11 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
         else :
             #self.drive.autonTankDrive(0, 0)
             self.drive.reset()
-            self.next_state('strafeRight')
+            self.next_state('strafeLeft')
 
     @timed_state(first=False, duration=1, next_state='getInRange')
-    def strafeRight(self):
-        self.drive.drive(1, 0, 0)
+    def strafeLeft(self):
+        self.drive.drive(-0.5, 0, 0)
 
     @state()
     def getInRange(self):

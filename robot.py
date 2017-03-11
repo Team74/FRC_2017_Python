@@ -76,32 +76,28 @@ class MyRobot(wpilib.SampleRobot):
                         print("yo 2")
                         self.drive.curSearch = True    #curSearch represents whether the trigger is pressed
                         #trigger on first button press here
-                    if(self.drive.findGoal()):#shooting system and more accurate. we do trade off mobility for it however, so it is important to have both
-                        print("yo 3")
-                        if(self.drive.curSearch_center): #cursearch_center represents whether we've locked on camera and are currently turning to the appropriate offset rotation, or are still centering on the camera
-                            print("yo 4")
-                            pass #ready to shoot
-                        elif(self.drive.getInRange()):#drives into range of the goal
-                            print("yo 5")
-                            self.drive.cam.TARGET = self.drive.offsetRotate(self.drive.cam.distance) / camera.FOV_X * 2
-                            self.drive.curSearch_center = True
-                else:
-                    print("yo 6")
-                    if(self.drive.curSearch or self.drive.curSearch_center):
-                        print("yo 7")
-                        self.drive.curSearch = False
-                        self.drive.curSearch_center = False
-                        self.drive.cam.TARGET = 0
-                    if self.controller.getButtonY():
-                        self.drive.findGoal(False)    #uses the other type
-                        self.drive.cam.TARGET = 0
-                    else:
-                        print("yo 8")
-                        if(self.controller.getButtonB()):
-                            self.drive.cam.TARGET = 0.07
-                            self.drive.findGoal()
-                            self.drive.cam.TARGET = 0
-                        self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
+                        if(self.drive.findGoal()):#shooting system and more accurate. we do trade off mobility for it however, so it is important to have both
+                            if(self.drive.curSearch_center): #cursearch_center represents whether we've locked on camera and are currently turning to the appropriate offset rotation, or are still centering on the camera
+                                if(self.drive.getInRange()):#drives into range of the goal
+                                    print("yo 5")
+                                    self.drive.cam.TARGET = self.drive.offsetRotate(self.drive.cam.distance) / camera.FOV_X * 2
+                                    self.drive.curSearch_center = True
+                        else:
+                            print("yo 6")
+                            if(self.drive.curSearch or self.drive.curSearch_center):
+                                print("yo 7")
+                                self.drive.curSearch = False
+                                self.drive.curSearch_center = False
+                                self.drive.cam.TARGET = 0
+                if self.controller.getButtonY():
+                    self.drive.findGoal(False)    #uses the other type
+                    self.drive.cam.TARGET = 0
+
+                if(self.controller.getButtonB()):
+                    self.drive.cam.TARGET = 0.07
+                    self.drive.findGoal()
+                    self.drive.cam.TARGET = 0
+                self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
                         #[cont.] the drive functions file. It also wraps the values with the scaleInput method which puts the input on an exponential curve, which gives the driver both fine-tuned control and power if you need it
             if(self.controller.getButtonX() == True):#This just allows the driver to zero the gyro out. It drifts between 30 and 60 degrees on every 360 degree rotation. It's  a hardare problem so this is the best we can  do
                 self.drive.zeroGyro()

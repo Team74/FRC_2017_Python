@@ -27,9 +27,9 @@ class opControl(Component):
         #self.ShooterSpeed = 1
         self.ShooterFeedSpeed = 1
         self.intakeToggle = False
-        self.shooterToggle = True
+        self.shooterToggle = False
         self.lights = True
-        self.shooterSpeed = 6000
+        self.shooterSpeed = 6078
         self.cam = Camera()
 
         self.drive = drive
@@ -41,9 +41,14 @@ class opControl(Component):
         self.shooterMain = CANTalon(9)
         self.shooterSlave = CANTalon(5)
         self.shooterFeed = CANTalon(4)
-        self.shooterMain.set(self.shooterSpeed)
         self.climberMotor = CANTalon(8)
 
+
+        self.shooterMain.setControlMode(CANTalon.ControlMode.Speed)
+        self.shooterSlave.setControlMode(CANTalon.ControlMode.Speed)
+        self.shooterMain.set(0)#6078
+        self.shooterSlave.set(0)#6078
+        '''
         self.shooterMain.configEncoderCodesPerRev(4096)
         self.shooterMain.configNominalOutputVoltage(+0.0, -0.0)
         self.shooterMain.configPeakOutputVoltage(+12.0, -12.0)
@@ -58,14 +63,16 @@ class opControl(Component):
 
         self.shooterSlave.setControlMode(CANTalon.ControlMode.Follower)
         self.shooterSlave.set(9)
-
+        '''
         self.shooterMain.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
         self.shooterMain.setEncPosition(CANTalon.FeedbackDevice.PulseWidth)
         '''
         self.frontIntake.enableBrakeMode(True)
         self..enableBrakeMode(True)
         self.shooterMain.enableBrakeMode(True)
+        '''
         self.shooterFeed.enableBrakeMode(True)
+        '''
         '''
         self.climberMotor.enableBrakeMode(True)
         '''
@@ -88,11 +95,13 @@ class opControl(Component):
         self.shooterSpeed = 0.5
         '''
     def rampShooter(self):#this method is supposed to ramp the motor speed based on our distance away from the target. Ideally we can use this to shoot on the move
+
         if(self.drive.getCamDistance() != None):
             self.shooterSpeed = ((1 - 0.716)/(126 - 77)*(self.drive.getCamDistance() - 126) + 1)*6700#Converted for us, see camera.py
             return self.shooterSpeed
         else:
             return self.shooterSpeed
+        #return 0
         #the theoretical proportion between motor
         #input and distance from goal. When implementing be sure to account for a
         #fall off point at which point the motor doesnt move fast enough to get a ball
@@ -133,7 +142,7 @@ class opControl(Component):
             elif(yButton and self.lights == True):
                 #self.flash1.set(Relay.Value.Off)
                 self.flash1.set(Relay.Value.kOff)
-                self.flash2.set(Rely.Value.kOff)
+                self.flash2.set(Relay.Value.kOff)
                 self.wait2 = 50
                 print ('Lights_Off')
                 self.lights = False
@@ -146,18 +155,22 @@ class opControl(Component):
         else:
             pass
             '''
-    def toggleShooter(self, xButton, speed=None):#switches the front motors on or off
-        if(speed==None):
-            speed = self.shooterSpeed
+    def toggleShooter(self, xButton):#switches the front motors on or off
+        '''
+        if xButton:
+            self.shooterMain.set(0)
+            self.shooterSlave.set(0)
+        '''
+
         if(self.wait>0):
             self.wait-=1
         elif(self.wait<=0):
             if(xButton and self.shooterToggle == False):
                 self.shooterToggle = True
-                self.wait = 35
+                self.wait = 40
             elif(xButton and self.shooterToggle == True):
                 self.shooterToggle = False
-                self.wait = 35
+                self.wait = 40
             else:
                 pass
             if(self.shooterToggle == True):
@@ -166,11 +179,17 @@ class opControl(Component):
             elif(self.shooterToggle == False):
                 self.shooterMain.set(0)
 
+
     def fire(self, speedValue):#toggles indexer, ramps motor based on distance
+        if speedValue>0:
             self.shooterFeed.set(int(speedValue))
-            print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + str(self.rampShooter()))
+            #print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + str(self.rampShooter()))
             if self.rampShooter != None:
-                self.shooterMain.set(int(self.rampShooter()))
+                self.shooterMain.set(self.shooterSpeed)#(int(self.rampShooter()))
+                self.shooterSlave.set(self.shooterSpeed)
+            else:
+                self.shooterMain.set(self.shooterSpeed)
+                self.shooterSlave.set(self.shooterSpeed)
 
     def singleFire(self,leftTrigger):#single ball fire for testing
         if(leftTrigger and self.wait3 < 30):

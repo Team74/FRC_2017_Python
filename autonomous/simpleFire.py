@@ -44,16 +44,21 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
 
     @state()
     def findGoal(self):
-        if(self.drive.findGoal()):
-            self.drive.autonTankDrive(0, 0)
-            self.next_state('sim_Fire')
+            if(self.drive.findGoal()):
+                if(self.drive.getInRange()):
+                    pass
+            else:
+                self.drive.reset()
+                self.next_state('fire')
 
     @timed_state(first=False, duration=7.5, next_state='done')
-    def sim_Fire(self) :
+    def fire(self) :
         self.drive.reset()
-        self.drive.fire(True)
-        #else:
-        #    self.opControl.toggleShooter(True)
+        if(self.opControl.getShooter()):
+            self.opControl.fire(self.opControl.rampShooter)
+        else:
+            self.opControl.toggleShooter()
+            self.opControl.fire(self.opControl.rampShooter)
 
 
     @state()

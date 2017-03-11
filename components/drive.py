@@ -37,7 +37,7 @@ class driveTrain(Component):
 		self.rfmotor.setInverted(True)
 		self.rbmotor.setInverted(True)
 		self.robotDrive = RobotDrive(self.lfmotor, self.lbmotor, self.rfmotor, self.rbmotor)
-		self.distanceSensor = DigitalInput(2)
+		self.distanceSensor = DigitalInput(0)
 		self.rfmotor.enableBrakeMode(True)
 		self.rbmotor.enableBrakeMode(True)
 		self.lfmotor.enableBrakeMode(True)
