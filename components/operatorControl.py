@@ -44,11 +44,12 @@ class opControl(Component):
         self.climberMotor = CANTalon(8)
 
 
-        self.shooterMain.setControlMode(CANTalon.ControlMode.Speed)
-        self.shooterSlave.setControlMode(CANTalon.ControlMode.Speed)
+        #self.shooterMain.setControlMode(CANTalon.ControlMode.Speed)
+        #self.shooterSlave.setControlMode(CANTalon.ControlMode.Speed)
         self.shooterMain.set(0)#6078
         self.shooterSlave.set(0)#6078
-        '''
+
+
         self.shooterMain.configEncoderCodesPerRev(4096)
         self.shooterMain.configNominalOutputVoltage(+0.0, -0.0)
         self.shooterMain.configPeakOutputVoltage(+12.0, -12.0)
@@ -63,7 +64,7 @@ class opControl(Component):
 
         self.shooterSlave.setControlMode(CANTalon.ControlMode.Follower)
         self.shooterSlave.set(9)
-        '''
+
         self.shooterMain.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
         self.shooterMain.setEncPosition(CANTalon.FeedbackDevice.PulseWidth)
         '''
@@ -164,32 +165,41 @@ class opControl(Component):
 
         if(self.wait>0):
             self.wait-=1
+            print('wait1')
         elif(self.wait<=0):
             if(xButton and self.shooterToggle == False):
                 self.shooterToggle = True
                 self.wait = 40
+                print ('toggle1')
             elif(xButton and self.shooterToggle == True):
                 self.shooterToggle = False
                 self.wait = 40
+                print ('toggle2')
             else:
                 pass
             if(self.shooterToggle == True):
-                self.shooterMain.set(speed)
+                self.shooterMain.set(6078)
+                print('setSpeed')
 
             elif(self.shooterToggle == False):
                 self.shooterMain.set(0)
+                print('stop')
 
 
     def fire(self, speedValue):#toggles indexer, ramps motor based on distance
         if speedValue>0:
             self.shooterFeed.set(int(speedValue))
             #print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + str(self.rampShooter()))
-            if self.rampShooter != None:
-                self.shooterMain.set(self.shooterSpeed)#(int(self.rampShooter()))
-                self.shooterSlave.set(self.shooterSpeed)
+            '''
+            ramped = self.rampShooter()
+            if ramped != None:
+                self.shooterMain.set(6078)#(int(self.rampShooter()))
+                self.shooterSlave.set(6078)
             else:
-                self.shooterMain.set(self.shooterSpeed)
-                self.shooterSlave.set(self.shooterSpeed)
+                self.shooterMain.set(6078)
+                self.shooterSlave.set(6078)
+        self.shooterFeed.set(speedValue)
+            '''
 
     def singleFire(self,leftTrigger):#single ball fire for testing
         if(leftTrigger and self.wait3 < 30):

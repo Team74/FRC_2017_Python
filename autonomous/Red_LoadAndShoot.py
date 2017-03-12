@@ -32,6 +32,7 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
     def drive_stop(self) :
         self.drive.reset()
         self.drive.autonTankDrive(0, 0)
+        self.opControl.toggleLights()
 
     @state()
     def drive_backward(self) :

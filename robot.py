@@ -75,21 +75,29 @@ class MyRobot(wpilib.SampleRobot):
                     if(not self.drive.curSearch):
                         print("yo 2")
                         self.drive.curSearch = True    #curSearch represents whether the trigger is pressed
-                        #trigger on first button press here
-                        if(self.drive.findGoal()):#shooting system and more accurate. we do trade off mobility for it however, so it is important to have both
-                            if(self.drive.curSearch_center): #cursearch_center represents whether we've locked on camera and are currently turning to the appropriate offset rotation, or are still centering on the camera
-                                if(self.drive.getInRange()):#drives into range of the goal
-                                    print("yo 5")
-                                    self.drive.cam.TARGET = self.drive.offsetRotate(self.drive.cam.distance) / camera.FOV_X * 2
-                                    self.drive.curSearch_center = True
+                    '''#trigger on first button press here
+                    if(self.drive.findGoal()):#shooting system and more accurate. we do trade off mobility for it however, so it is important to have both
+                        if(self.drive.curSearch_center): #cursearch_center represents whether we've locked on camera and are currently turning to the appropriate offset rotation, or are still centering on the camera
+                            if(self.drive.getInRange()):#drives into range of the goal
+                                print("yo 5")
+                                self.drive.cam.TARGET = self.drive.offsetRotate(self.drive.cam.distance) / camera.FOV_X * 2
+                                self.drive.curSearch_center = True
                         else:
-                            print("yo 6")
-                            if(self.drive.curSearch or self.drive.curSearch_center):
-                                print("yo 7")
-                                self.drive.curSearch = False
-                                self.drive.curSearch_center = False
-                                self.drive.cam.TARGET = 0
+                            pass'''
+                    self.drive.cam.TARGET = self.drive.offsetRotate(self.drive.cam.distance) / camera.FOV_X * 2
+                    if(self.drive.findGoal()):
+                        if self.drive.getInRange():
+                            pass #shoot
+                    self.drive.cam.TARGET = 0
+                '''elif(self.drive.curSearch or self.drive.curSearch_center):
+                    print("yo 7")
+                    self.drive.curSearch = False
+                    self.drive.curSearch_center = False
+                    self.drive.cam.TARGET = 0'''
+
+
                 if self.controller.getButtonY():
+                    self.drive.cam.TARGET = 0
                     self.drive.findGoal(False)    #uses the other type
                     self.drive.cam.TARGET = 0
 
