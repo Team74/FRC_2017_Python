@@ -187,8 +187,8 @@ class opControl(Component):
 
 
     def fire(self, speedValue):#toggles indexer, ramps motor based on distance
-        if speedValue>0:
-            self.shooterFeed.set(int(speedValue))
+        #if speedValue>0:
+        self.shooterFeed.set(int(speedValue))
             #print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + str(self.rampShooter()))
             '''
             ramped = self.rampShooter()

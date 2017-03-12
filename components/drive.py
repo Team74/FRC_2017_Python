@@ -173,22 +173,25 @@ class driveTrain(Component):
 			return True
 
 	def centerSide(self, moveType=True):
+		camMidVar=.3
+		boost=.18
+		boostInertia=.04
 		if(self.cam.mid_x == None):
 			self.autonTankDrive(0, 0)
 			if(self.myInertia > 0):
 				self.myInertia -= 1
 			return False
 		elif(abs(self.cam.mid_x - camera.TARGET) > camera.DDZ_ROT):	#radians, arbitrary deadzone value
-			if(abs(self.cam.mid_x - camera.TARGET) > 0.15):
-				spdMag = 0.15
+			if(abs(self.cam.mid_x - camera.TARGET) > camMidVar):
+				spdMag = camMidVar
 			else:
-				spdMag = 0.09
+				spdMag = boost
 			if(self.myInertia <= 1):
-				spdMag += 0.02
+				spdMag += boostInertia
 				print("Speed Boost")
 				self.myInertia = 0
 			if(self.myInertia <= 5):
-				self.myInertia += 1
+				self.myInertia += 2
 			spd = math.copysign(spdMag, self.cam.mid_x - camera.TARGET)#min(max(MIN_ROT_SPD, abs(self.mid_x)), MAX_ROT_SPD), self.mid_x)	#again arbitrary numbers
 			if moveType:	#shooter
 				self.autonTankDrive(spd, -spd)
@@ -197,7 +200,7 @@ class driveTrain(Component):
 			return False
 		self.autonTankDrive(0, 0)
 		if(self.myInertia > 0):
-			self.myInertia -= 1
+			self.myInertia -= 2
 		self.savedDistance = self.cam.distance
 		return True
 
