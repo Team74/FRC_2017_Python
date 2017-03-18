@@ -59,10 +59,10 @@ class Camera:
 				print("no new")
 		else:
 			print("no response")
-		self.mid_x = None
-		self.mid_y = None
-		self.theta = None
-		self.distance = None
+			self.mid_x = None
+			self.mid_y = None
+			self.theta = None
+			self.distance = None
 		print("boog 6")
 		#print("skip")
 

@@ -69,6 +69,11 @@ class driveTrain(Component):
 		self.rfmotor.set(rightSpeed)
 		self.rbmotor.set(rightSpeed)
 
+	def autonStrafe(self, strafeSpeed):
+			self.rfmotor.set(strafeSpeed*-1)
+			self.lbmotor.set(strafeSpeed*-1)
+			self.rbmotor.set(strafeSpeed)
+			self.lfmotor.set(strafeSpeed)
 	def getSensor(self):
 		return self.distanceSensor.get()
 
@@ -91,7 +96,7 @@ class driveTrain(Component):
 		pass
 
 
-	def turnAngle(self, degrees, speed=0.2):
+	def turnAngle(self, degrees, speed=0.25):
 		if(self.gyro.getAngle() > degrees+0.25):
 			self.autonTankDrive(-1*speed, speed)
 			print(self.gyro.getAngle())
@@ -106,13 +111,10 @@ class driveTrain(Component):
 		return False
 
 	def visionLineUp(self):	# I don't think we use this method. See findGoal.
-		self.cam.receive()
 		if self.cam.centerSide():#and self.cam.centerLine() :	#this works because of short-circuiting
 			self.reset()
 
 	def findGoal(self, moveType=True):
-		print("haha 1")
-		self.cam.receive()
 		print("haha 2")
 		if self.centerSide(moveType):#and self.cam.centerLine() :	#this works because of short-circuiting #in a one-horse open sleigh
 			print("haha 3")
@@ -173,7 +175,13 @@ class driveTrain(Component):
 			return True
 
 	def centerSide(self, moveType=True):
-		camMidVar=.3
+		try:
+			self.cam.receive(moveType)
+		except:
+			print("hufdhsjl")
+			return True
+		print("Distance" + str(self.cam.distance))
+		camMidVar=.3	#a deadzone for boosting
 		boost=.18
 		boostInertia=.04
 		if(self.cam.mid_x == None):
@@ -191,7 +199,7 @@ class driveTrain(Component):
 				print("Speed Boost")
 				self.myInertia = 0
 			if(self.myInertia <= 5):
-				self.myInertia += 2
+				self.myInertia += 1
 			spd = math.copysign(spdMag, self.cam.mid_x - camera.TARGET)#min(max(MIN_ROT_SPD, abs(self.mid_x)), MAX_ROT_SPD), self.mid_x)	#again arbitrary numbers
 			if moveType:	#shooter
 				self.autonTankDrive(spd, -spd)
@@ -200,7 +208,7 @@ class driveTrain(Component):
 			return False
 		self.autonTankDrive(0, 0)
 		if(self.myInertia > 0):
-			self.myInertia -= 2
+			self.myInertia -= 1
 		self.savedDistance = self.cam.distance
 		return True
 

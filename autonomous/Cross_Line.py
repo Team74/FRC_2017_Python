@@ -18,7 +18,7 @@ from wpilib import SendableChooser
 class autonomousModeTestingLowBar(StatefulAutonomous):
 
     MODE_NAME = 'Cross_Line'
-    DEFAULT = False
+    DEFAULT = True
     DRIVE_DISTANCE = 60
     #drive = driveTrain
     chooser = SendableChooser()
@@ -51,8 +51,8 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
     @state()
     def drive_forward(self) :
         print ('driveForeward1')
-        if self.drive.getDistance() <120 :
-            self.drive.autonTankDrive(0.5, 0.5)
+        if self.drive.getDistance() < 120 :
+            self.drive.autonTankDrive(-0.5, -0.5)
         else :
             print ('driveForewardPassed')
             self.drive.reset()

@@ -149,13 +149,15 @@ class opControl(Component):
                 self.lights = False
             else:
                 pass
-                '''
+
     def reverseIntake(self, bButton):# reverses the intake in case we need to dump our balls onto the field (probably in case of climbing)
-        if(bButton):
-            self.frontIntake.set(self.intakeToggle*(-1))
-        else:
-            pass
-            '''
+        if(bButton and self.intakeToggle):
+            self.frontIntake.set(-1)
+        elif(self.intakeToggle):
+            self.frontIntake.set(1)
+        elif self.intakeToggle==False:
+            self.frontIntake.set(0)
+
     def toggleShooter(self, xButton):#switches the front motors on or off
         '''
         if xButton:
@@ -190,7 +192,7 @@ class opControl(Component):
         #if speedValue>0:
         self.shooterFeed.set(int(speedValue))
             #print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + str(self.rampShooter()))
-            '''
+        '''
             ramped = self.rampShooter()
             if ramped != None:
                 self.shooterMain.set(6078)#(int(self.rampShooter()))
@@ -199,7 +201,7 @@ class opControl(Component):
                 self.shooterMain.set(6078)
                 self.shooterSlave.set(6078)
         self.shooterFeed.set(speedValue)
-            '''
+        '''
 
     def singleFire(self,leftTrigger):#single ball fire for testing
         if(leftTrigger and self.wait3 < 30):
@@ -215,9 +217,11 @@ class opControl(Component):
     def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,leftTrigger): #rightBumper= agitator
         #self.modifySpeed(rightTrigger,leftTrigger)
         #print(self.lights)
-        self.toggleIntake(aButton)
-        self.toggleLights(yButton)
-        #self.reverseIntake(bButton)
         self.toggleShooter(xButton)
+        self.toggleLights(yButton)
+        if bButton:
+            self.reverseIntake(bButton)
+        else:
+            self.toggleIntake(aButton)
         self.fire(rightTrigger)
         self.climb(climberStick)
