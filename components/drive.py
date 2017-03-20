@@ -181,19 +181,16 @@ class driveTrain(Component):
 			print("hufdhsjl")
 			return True
 		print("Distance" + str(self.cam.distance))
-		camMidVar=.3	#a deadzone for boosting
-		boost=.18
-		boostInertia=.04
-		if(self.cam.mid_x == None):
+		camMidVar=.05	#a deadzone for boosting
+		boost=.2 if moveType else .1 #had .25
+		boostInertia=.06
+		if(self.cam.mid_x == None or self.cam.noNew >= 5):
 			self.autonTankDrive(0, 0)
 			if(self.myInertia > 0):
 				self.myInertia -= 1
 			return False
 		elif(abs(self.cam.mid_x - camera.TARGET) > camera.DDZ_ROT):	#radians, arbitrary deadzone value
-			if(abs(self.cam.mid_x - camera.TARGET) > camMidVar):
-				spdMag = camMidVar
-			else:
-				spdMag = boost
+			spdMag = boost
 			if(self.myInertia <= 1):
 				spdMag += boostInertia
 				print("Speed Boost")
