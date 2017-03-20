@@ -185,7 +185,7 @@ class opControl(Component):
 
             elif(self.shooterToggle == False):
                 self.shooterMain.set(0)
-                print('stop')
+                #print('stop')
 
 
     def fire(self, speedValue):#toggles indexer, ramps motor based on distance

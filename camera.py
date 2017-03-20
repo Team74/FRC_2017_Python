@@ -4,7 +4,9 @@ import math
 import serial
 from time import sleep
 
-TARGET = 0.2#-0.7
+TARGET = 0#0.2#-0.7
+SHOOTER_TARGET = 0.2
+GEARS_TARGET = -0.7
 
 DDZ_ROT = 0.05
 #MIN_ROT_SPD = 0.04
@@ -35,7 +37,7 @@ class Camera:
 	noNew = 0
 
 	def __init__(self):
-		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
+		#self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
 		pass
 	def receive(self, moveType=True):
 		print("boog 1")
