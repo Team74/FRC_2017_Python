@@ -4,9 +4,9 @@ import math
 import serial
 from time import sleep
 
-TARGET = 0.2#-0.7
+TARGET = 0
 
-DDZ_ROT = 0.05
+DDZ_ROT = 0.03
 #MIN_ROT_SPD = 0.04
 #MAX_ROT_SPD = 0.3
 
@@ -32,8 +32,6 @@ class Camera:
 	driveDelay = 0
 	CamState = True	#default, shooter / false = gears
 
-	noNew = 0
-
 	def __init__(self):
 		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
 		pass
@@ -49,7 +47,6 @@ class Camera:
 			print("boog 4")
 			ans = self.uncode(ans.decode())
 			if ans[0] != "" and self.old_x != float(ans[0]):
-				noNew = 0
 				print("boog 5")
 				self.old_x = self.mid_x
 				self.mid_x = float(ans[0])
@@ -60,7 +57,6 @@ class Camera:
 				return
 			else:
 				print("no new")
-				noNew += 1
 		else:
 			print("no response")
 			self.mid_x = None
