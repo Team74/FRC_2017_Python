@@ -71,19 +71,23 @@ class MyRobot(wpilib.SampleRobot):
                 self.drive.drive(0,0,0)
             else:
                 if(self.controller.getRightTrigger()==True):#This statement tells the drivetrain exclusively track the target and ignore other movement commands. It is faster than the moving and
+                    camera.TARGET = camera.SHOOTER_TARGET
                     self.drive.centerSide()
+                    camera.TARGET = 0
                 elif self.controller.getLeftTrigger()==True:
+                    camera.TARGET = camera.GEARS_TARGET
                     self.drive.centerSide(False)
+                    camera.TARGET = 0
                 else:
                     if self.controller.getButtonY():
-                        #self.drive.cam.TARGET = 0
+                        camera.TARGET = camera.GEARS_TARGET
                         self.drive.findGoal(False)    #uses the other type
-                        #self.drive.cam.TARGET = 0
+                        camera.TARGET = 0
 
                     if(self.controller.getButtonB()):
-                        #self.drive.cam.TARGET = 0.07
+                        camera.TARGET = camera.SHOOTER_TARGET
                         self.drive.findGoal()
-                        #self.drive.cam.TARGET = 0
+                        camera.TARGET = 0
                     self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
                             #[cont.] the drive functions file. It also wraps the values with the scaleInput method which puts the input on an exponential curve, which gives the driver both fine-tuned control and power if you need it
             if(self.controller.getButtonX() == True):#This just allows the driver to zero the gyro out. It drifts between 30 and 60 degrees on every 360 degree rotation. It's  a hardare problem so this is the best we can  do
