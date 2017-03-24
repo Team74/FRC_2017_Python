@@ -138,14 +138,12 @@ class opControl(Component):
                 self.flash1.set(Relay.Value.kForward)#using spike H-bridge relays, need tp use forward instead of on because of the way the modes function
                 self.flash2.set(Relay.Value.kForward)
                 self.wait2 = 50
-                print ('Lights_On')
                 self.lights = True
             elif(yButton and self.lights == True):
                 #self.flash1.set(Relay.Value.Off)
                 self.flash1.set(Relay.Value.kOff)
                 self.flash2.set(Relay.Value.kOff)
                 self.wait2 = 50
-                print ('Lights_Off')
                 self.lights = False
             else:
                 pass
@@ -167,25 +165,20 @@ class opControl(Component):
 
         if(self.wait>0):
             self.wait-=1
-            print('wait1')
         elif(self.wait<=0):
             if(xButton and self.shooterToggle == False):
                 self.shooterToggle = True
                 self.wait = 40
-                print ('toggle1')
             elif(xButton and self.shooterToggle == True):
                 self.shooterToggle = False
                 self.wait = 40
-                print ('toggle2')
             else:
                 pass
             if(self.shooterToggle == True):
                 self.shooterMain.set(6078)
-                print('setSpeed')
 
             elif(self.shooterToggle == False):
                 self.shooterMain.set(0)
-                print('stop')
 
 
     def fire(self, speedValue):#toggles indexer, ramps motor based on distance
@@ -211,7 +204,10 @@ class opControl(Component):
             self.shooterFeed.set(0)
 
     def climb(self, climberStick):#using a stick because we ran out of buttons on the controller
-        self.climberMotor.set(abs(climberStick))
+        if climberStick < .05:
+            self.climberMotor.set(abs(climberStick))
+        else:
+            self.climberMotor.set(abs(climberStick))
 
 
     def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,leftTrigger): #rightBumper= agitator

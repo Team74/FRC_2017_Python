@@ -36,7 +36,7 @@ class Camera:
 
 	def __init__(self):
 		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
-		pass
+		#pass
 	def receive(self, moveType=True):
 		print("boog 1")
 		self.ser.write(("shooter\n" if moveType else "gears\n").encode())
