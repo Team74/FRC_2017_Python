@@ -6,7 +6,7 @@ from time import sleep
 
 TARGET = 0#0.2#-0.7
 SHOOTER_TARGET = 0.2
-GEARS_TARGET = -0.7
+GEARS_TARGET = -0.8
 
 DDZ_ROT = 0.05
 #MIN_ROT_SPD = 0.04
@@ -38,38 +38,42 @@ class Camera:
 
 	def __init__(self):
 		self.ser = serial.Serial("/dev/ttyS1", 115200, timeout=0.05)
-		pass
+		#pass
 	def receive(self, moveType=True):
-		print("boog 1")
+		#print("boog 1")
 		self.ser.write(("shooter\n" if moveType else "gears\n").encode())
-		print("boog 2")
+		print(moveType)
+		#print("boog 2")
 		ans = self.ser.readline()
-		print("boog 3")
-		print("boog 3.5 --" + ans.decode())
+		#print("boog 3")
+		#print("boog 3.5 --" + ans.decode())
 		#ans = self.ser.read(100)
 		if ans:
-			print("boog 4")
+			#print("boog 4")
 			ans = self.uncode(ans.decode())
-			if ans[0] != "" and self.old_x != float(ans[0]):
-				noNew = 0
-				print("boog 5")
-				self.old_x = self.mid_x
-				self.mid_x = float(ans[0])
-				self.mid_y = float(ans[1])
-				self.theta = float(ans[2])
-				self.distance = float(ans[3])*39.37#camera returns distance values in meters, converting to inches to preserve continuity and readability.
-				print(str(self.mid_x))			   #This also allows it to work with all other movement functions, which require a desired distance variable
-				return
-			else:
-				print("no new")
-				noNew += 1
-		else:
-			print("no response")
-			self.mid_x = None
-			self.mid_y = None
-			self.theta = None
-			self.distance = None
-		print("boog 6")
+			if(len(ans) > 0):
+				if ans[0] != "" and self.old_x != float(ans[0]):
+					self.noNew = 0
+					#print("boog 5")
+					self.mid_x = float(ans[0])
+					self.old_x = self.mid_x
+					self.mid_y = float(ans[1])
+					self.theta = float(ans[2])
+					self.distance = float(ans[3])*39.37#camera returns distance values in meters, converting to inches to preserve continuity and readability.
+					print(str(self.mid_x))			   #This also allows it to work with all other movement functions, which require a desired distance variable
+					return
+				else:
+					print("no new")
+					self.noNew += 1
+					self.mid_x = None
+					return
+		#else -- only if ans == None or len(ans) == 0
+		print("no response")
+		self.mid_x = None
+		self.mid_y = None
+		self.theta = None
+		self.distance = None
+		#print("boog 6")
 		#print("skip")
 
 	def uncode(self, string):

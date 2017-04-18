@@ -51,8 +51,8 @@ class autonomousModeTestingLowBar(StatefulAutonomous):
     @state()
     def drive_forward(self) :
         print ('driveForeward1')
-        if self.drive.getDistance() < 120 :
-            self.drive.autonTankDrive(-0.5, -0.5)
+        if self.drive.getDistance() < 130/2.25 :
+            self.drive.autonTankDrive(-0.4, -0.4)
         else :
             print ('driveForewardPassed')
             self.drive.reset()

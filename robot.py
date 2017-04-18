@@ -51,11 +51,15 @@ class MyRobot(wpilib.SampleRobot):
             wpilib.Timer.delay(0.01)              # Wait for 0.01 seconds
 
     def autonomous(self):
-
         self.drive.reset()
         while self.isAutonomous() and self.isEnabled():
             self.autonomous_modes.run()
-
+            '''
+            if self.drive.getDistance() < 120:
+                self.drive.autonTankDrive(-0.2, -0.2)
+            else:
+                self.drive.reset()
+            '''
 
     def operatorControl(self):
         #self.opControl.setSpeed() #used for manually setting motor speeds for testing, disable for teleop
@@ -74,21 +78,27 @@ class MyRobot(wpilib.SampleRobot):
                     camera.TARGET = camera.SHOOTER_TARGET
                     self.drive.centerSide()
                     camera.TARGET = 0
-                elif self.controller.getLeftTrigger()==True:
+                if self.controller.getLeftTrigger()==True:
                     camera.TARGET = camera.GEARS_TARGET
                     self.drive.centerSide(False)
                     camera.TARGET = 0
                 else:
                     if self.controller.getButtonY():
                         camera.TARGET = camera.GEARS_TARGET
-                        self.drive.findGoal(False)    #uses the other type
+                        self.drive.centerSide(False)    #uses the other type
                         camera.TARGET = 0
 
                     if(self.controller.getButtonB()):
                         camera.TARGET = camera.SHOOTER_TARGET
-                        self.drive.findGoal()
+                        self.drive.centerSide()
                         camera.TARGET = 0
-                    self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
+                    else:
+                        if self.controller.getRightBumper():
+                            self.drive.drive(self.scaleInput(self.controller.getLeftX()/2), self.scaleInput(self.controller.getLeftY()/2),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
+                        elif self.controller.getLeftBumper():
+                            self.drive.driveWithoutGyro(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))
+                        else:
+                            self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))
                             #[cont.] the drive functions file. It also wraps the values with the scaleInput method which puts the input on an exponential curve, which gives the driver both fine-tuned control and power if you need it
             if(self.controller.getButtonX() == True):#This just allows the driver to zero the gyro out. It drifts between 30 and 60 degrees on every 360 degree rotation. It's  a hardare problem so this is the best we can  do
                 self.drive.zeroGyro()

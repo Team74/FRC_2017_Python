@@ -30,14 +30,19 @@ class driveTrain(Component):
 		self.intakeSpeed = .5
 		self.i = 1
 		self.savedDistance = 0
+
 		self.lfmotor = CANTalon(7)#7#2
 		self.lbmotor = CANTalon(6)#6#1
 		self.rfmotor = CANTalon(1)#1#3
-		self.rbmotor = CANTalon(2)
+		self.rbmotor = CANTalon(2)#2
+
 		self.rfmotor.setInverted(True)
 		self.rbmotor.setInverted(True)
+
 		self.robotDrive = RobotDrive(self.lfmotor, self.lbmotor, self.rfmotor, self.rbmotor)
+
 		self.distanceSensor = DigitalInput(0)
+
 		self.rfmotor.enableBrakeMode(True)
 		self.rbmotor.enableBrakeMode(True)
 		self.lfmotor.enableBrakeMode(True)
@@ -47,14 +52,18 @@ class driveTrain(Component):
 		self.rbmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
 		self.lfmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
 		self.lbmotor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
+
 		self.lfmotor.configEncoderCodesPerRev(4096)
 		self.rfmotor.configEncoderCodesPerRev(4096)
 		self.lbmotor.configEncoderCodesPerRev(4096)
 		self.rbmotor.configEncoderCodesPerRev(4096)
+
 		self.rfmotor.setPosition(0)
 		self.lfmotor.setPosition(0)
 		self.rbmotor.setPosition(0)
 		self.lbmotor.setPosition(0)
+
+		self.initialAngle=0
 		self.myInertia = 0
 		self.cam = Camera()
 		self.curSearch = False #Represents whether we are currently using shooter vision; used to trigger on-presss and -release
@@ -71,11 +80,78 @@ class driveTrain(Component):
 
 	def autonStrafe(self, strafeSpeed):
 			self.rfmotor.set(strafeSpeed*-1)
-			self.lbmotor.set(strafeSpeed*-1)
-			self.rbmotor.set(strafeSpeed)
+			self.lbmotor.set(strafeSpeed*-1*0.925)
+			self.rbmotor.set(strafeSpeed*0.925)
+			#			self.rfmotor.set(strafeSpeed*-1*min(1+self.gyro.getAngle()/150, 1))
+			#			self.lbmotor.set(strafeSpeed*-1*min(1-self.gyro.getAngle()/150, 1))
+			#			self.rbmotor.set(strafeSpeed*min(1-self.gyro.getAngle()/150, 1))
+			#			self.lfmotor.set(strafeSpeed*min(1+self.gyro.getAngle()/150, 1))
 			self.lfmotor.set(strafeSpeed)
 	def getSensor(self):
 		return self.distanceSensor.get()
+
+	def strafe2(self, speed, desiredAngle):
+		if speed > 0.8:
+			speed = 0.8
+		#speed = 0
+		compensateAngle=True
+		compensateDrift=False
+		compensateCam=False
+		autonOffset = -.47
+		FOVVar = .05
+		aVariable = 0.0375
+		deadzone = .01
+		lfmotorSpeed = speed
+		lbmotorSpeed = -speed
+		rfmotorSpeed = -speed
+		rbmotorSpeed = speed
+		if compensateAngle:
+			if self.gyro.getAngle() > desiredAngle+1 :
+				lfmotorSpeed -= aVariable
+				lbmotorSpeed -= aVariable
+				rfmotorSpeed += aVariable
+				rbmotorSpeed += aVariable
+			elif self.gyro.getAngle() < desiredAngle-1 :
+				lfmotorSpeed += aVariable
+				lbmotorSpeed += aVariable
+				rfmotorSpeed -= aVariable
+				rbmotorSpeed -= aVariable
+		if compensateDrift:
+			print (self.gyro.getDisplacementX())
+
+			if self.gyro.getDisplacementX() < -deadzone:
+				lfmotorSpeed += aVariable
+				lbmotorSpeed += aVariable
+				rfmotorSpeed += aVariable
+				rbmotorSpeed += aVariable
+			elif self.gyro.getDisplacementX() > deadzone:
+				lfmotorSpeed -= aVariable
+				lbmotorSpeed -= aVariable
+				rfmotorSpeed -= aVariable
+				rbmotorSpeed -= aVariable
+
+		if compensateCam:
+			try:
+				self.cam.recieve()
+				if (self.cam.mid_x != None and abs(self.cam.mid_x - autonOffset) > FOVVar):
+					if self.cam.mid_x - autonOffset > 1:
+						lfmotorSpeed += aVariable
+						lbmotorSpeed += aVariable
+						rfmotorSpeed -= aVariable
+						rbmotorSpeed -= aVariable
+					else:
+						lfmotorSpeed -= aVariable
+						lbmotorSpeed -= aVariable
+						rfmotorSpeed += aVariable
+						rbmotorSpeed += aVariable
+
+			except:
+				pass
+		self.rfmotor.set(rfmotorSpeed)
+		self.rbmotor.set(rbmotorSpeed)
+		self.lfmotor.set(lfmotorSpeed)
+		self.lbmotor.set(lbmotorSpeed)
+
 
 	def reset(self):
 		self.rfmotor.set(0)
@@ -96,7 +172,7 @@ class driveTrain(Component):
 		pass
 
 
-	def turnAngle(self, degrees, speed=0.25):
+	def turnAngle(self, degrees, speed):
 		if(self.gyro.getAngle() > degrees+0.25):
 			self.autonTankDrive(-1*speed, speed)
 			print(self.gyro.getAngle())
@@ -126,6 +202,13 @@ class driveTrain(Component):
 
 	def drive(self, leftX, leftY, rightX):
 			self.robotDrive.mecanumDrive_Cartesian(leftX*-1, leftY*-1, rightX, self.gyro.getAngle())
+			print(self.convertEncoderRaw(abs(self.rfmotor.getPosition())))
+			print(self.convertEncoderRaw(abs(self.rbmotor.getPosition())))
+			print(self.convertEncoderRaw(abs(self.lfmotor.getPosition())))
+			print(self.convertEncoderRaw(abs(self.lbmotor.getPosition())))
+	def driveWithoutGyro(self, leftX, leftY, rightX):
+				self.robotDrive.mecanumDrive_Cartesian(leftX*-1, leftY*-1, rightX, 0)
+
 	def zeroGyro(self):
 		self.gyro.reset()
 	def enablePIDs(self):
@@ -177,9 +260,9 @@ class driveTrain(Component):
 	def centerSide(self, moveType=True):
 		try:
 			self.cam.receive(moveType)
-		except:
-			print("hufdhsjl")
-			return True
+		except Exception as err:
+			print("hufdhsjl: " + str(type(err)) + str(err))
+			return False
 		print("Distance" + str(self.cam.distance))
 		camMidVar=.05	#a deadzone for boosting
 		boost=.2 if moveType else .1 #had .25
@@ -201,7 +284,7 @@ class driveTrain(Component):
 			if moveType:	#shooter
 				self.autonTankDrive(spd, -spd)
 			else:	#gears
-				self.autonTankDrive(-spd, -spd)	#forward, back -- gear on side
+				self.autonTankDrive(spd, spd)	#forward, back -- gear on side
 			return False
 		self.autonTankDrive(0, 0)
 		if(self.myInertia > 0):

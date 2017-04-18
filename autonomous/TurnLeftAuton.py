@@ -5,13 +5,22 @@ class leftSideAuton(BaseSideGearAuton):
     MODE_NAME = 'LeftSideAuton'
 
     def getTurnAngle(self):
-        return -30
+        return 48
 
     def getStrafe(self):
-        return -0.725
+        return -0.8
 
     def getTargetDistance(self):
-        return 110
+        return 134/2.25
 
     def getSpeed(self):
-        return 0.5
+        return  -0.35
+
+    def getOffset(self):
+        return -0.47
+
+    def getCounterforce(self):
+            return -0.1
+
+    def getCenter(self):
+        return False

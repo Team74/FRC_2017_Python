@@ -29,7 +29,7 @@ class opControl(Component):
         self.intakeToggle = False
         self.shooterToggle = False
         self.lights = True
-        self.shooterSpeed = 6078
+        self.shooterSpeed = 6240
         self.cam = Camera()
 
         self.drive = drive
@@ -38,10 +38,11 @@ class opControl(Component):
         self.flash1 = Relay(0)
         self.flash2 = Relay(1)
         self.frontIntake = CANTalon(3)
-        self.shooterMain = CANTalon(9)
-        self.shooterSlave = CANTalon(5)
         self.shooterFeed = CANTalon(4)
+        self.shooterSlave = CANTalon(5)
         self.climberMotor = CANTalon(8)
+        self.shooterMain = CANTalon(9)
+        self.climberSlave = CANTalon(10)
 
 
         #self.shooterMain.setControlMode(CANTalon.ControlMode.Speed)
@@ -175,7 +176,7 @@ class opControl(Component):
             else:
                 pass
             if(self.shooterToggle == True):
-                self.shooterMain.set(6078)
+                self.shooterMain.set(6240)
 
             elif(self.shooterToggle == False):
                 self.shooterMain.set(0)
@@ -204,10 +205,12 @@ class opControl(Component):
             self.shooterFeed.set(0)
 
     def climb(self, climberStick):#using a stick because we ran out of buttons on the controller
-        if climberStick < .05:
-            self.climberMotor.set(abs(climberStick))
+        if abs(climberStick) < .05:
+            self.climberMotor.set(0)
+            self.climberSlave.set(0)
         else:
-            self.climberMotor.set(abs(climberStick))
+            self.climberMotor.set(abs(climberStick)*-1)
+            self.climberSlave.set(abs(climberStick)*-1)
 
 
     def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,leftTrigger): #rightBumper= agitator
