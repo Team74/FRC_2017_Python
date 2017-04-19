@@ -99,7 +99,7 @@ class opControl(Component):
     def rampShooter(self):#this method is supposed to ramp the motor speed based on our distance away from the target. Ideally we can use this to shoot on the move
 
         if(self.drive.getCamDistance() != None):
-            self.shooterSpeed = ((1 - 0.716)/(126 - 77)*(self.drive.getCamDistance() - 126) + 1)*6700#Converted for us, see camera.py
+            self.shooterSpeed = ((1 - 0.716)/(126 - 77)*(self.drive.getCamDistance() - 126) + 1)*6300#Converted for us, see camera.py
             return self.shooterSpeed
         else:
             return self.shooterSpeed
@@ -176,7 +176,7 @@ class opControl(Component):
             else:
                 pass
             if(self.shooterToggle == True):
-                self.shooterMain.set(6240)
+                self.shooterMain.set(self.shooterSpeed)
 
             elif(self.shooterToggle == False):
                 self.shooterMain.set(0)
@@ -196,6 +196,13 @@ class opControl(Component):
                 self.shooterSlave.set(6078)
         self.shooterFeed.set(speedValue)
         '''
+    def rampShooterUp(userInput):#bumper
+        if userInput:
+            self.shooterMain.set(6300)
+
+    def rampShooterDown(userInput):
+        if abs(userInput)>.5:
+            self.shooterMain.set(5700)
 
     def singleFire(self,leftTrigger):#single ball fire for testing
         if(leftTrigger and self.wait3 < 30):
@@ -213,7 +220,7 @@ class opControl(Component):
             self.climberSlave.set(abs(climberStick)*-1)
 
 
-    def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,leftTrigger): #rightBumper= agitator
+    def operatorFunctions(self, aButton, bButton, xButton, yButton, climberStick, rightTrigger,leftTrigger, leftBumper): #rightBumper= agitator
         #self.modifySpeed(rightTrigger,leftTrigger)
         #print(self.lights)
         self.toggleShooter(xButton)
@@ -224,3 +231,5 @@ class opControl(Component):
             self.toggleIntake(aButton)
         self.fire(rightTrigger)
         self.climb(climberStick)
+        self.rampShooterUp(leftBumper)
+        self.rampShooterDown(leftTrigger)

@@ -103,7 +103,7 @@ class MyRobot(wpilib.SampleRobot):
             if(self.controller.getButtonX() == True):#This just allows the driver to zero the gyro out. It drifts between 30 and 60 degrees on every 360 degree rotation. It's  a hardare problem so this is the best we can  do
                 self.drive.zeroGyro()
 
-            self.opControl.operatorFunctions(self.controller2.getButtonA(), self.controller2.getButtonB(), self.controller2.getButtonX(), self.controller2.getButtonY(), self.controller2.getLeftY(), self.controller2.getRightTrigger(), self.controller2.getLeftTrigger())
+            self.opControl.operatorFunctions(self.controller2.getButtonA(), self.controller2.getButtonB(), self.controller2.getButtonX(), self.controller2.getButtonY(), self.controller2.getLeftY(), self.controller2.getRightTrigger(), self.controller2.getLeftTrigger(), controller2.getLeftBumper())
             #passes controller2 values to the operatorControl file
 
     def scaleInput(self, x):#Wrapper method that puts all 0-1 input on an exponential curve, meaning that low values are exponentially low and high values scale up quickly. This allows for both fine motor control and
