@@ -94,7 +94,7 @@ class MyRobot(wpilib.SampleRobot):
                         camera.TARGET = 0
                     else:
                         if self.controller.getRightBumper():
-                            self.drive.drive(self.scaleInput(self.controller.getLeftX()/2), self.scaleInput(self.controller.getLeftY()/2),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
+                            self.drive.drive(self.scaleInput(self.controller.getLeftX()/1.5), self.scaleInput(self.controller.getLeftY()/1.5),self.scaleInput(self.controller.getRightX()))#Passing variables from the drivers controller to
                         elif self.controller.getLeftBumper():
                             self.drive.driveWithoutGyro(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))
                         else:

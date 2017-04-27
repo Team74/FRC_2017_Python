@@ -265,8 +265,8 @@ class driveTrain(Component):
 			return False
 		print("Distance" + str(self.cam.distance))
 		camMidVar=.05	#a deadzone for boosting
-		boost=.2 if moveType else .1 #had .25
-		boostInertia=.06
+		boost=.4 if moveType else .2 #had .25
+		boostInertia=.2
 		if(self.cam.mid_x == None or self.cam.noNew >= 5):
 			self.autonTankDrive(0, 0)
 			if(self.myInertia > 0):
