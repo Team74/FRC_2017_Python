@@ -5,13 +5,13 @@ class rightSideAuton(BaseSideGearAuton):
     MODE_NAME = 'RightSideAuton'
 
     def getTurnAngle(self):
-        return -51
+        return -63
 
     def getStrafe(self):
         return -0.8
 
     def getTargetDistance(self):
-        return 107/2.25
+        return 98/2.25
 
     def getSpeed(self):
         return -0.35

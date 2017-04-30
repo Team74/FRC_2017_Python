@@ -196,10 +196,11 @@ class opControl(Component):
                 self.shooterSlave.set(6078)
         self.shooterFeed.set(speedValue)
         '''
+    '''
     def rampShooterUp(userInput):#bumper
         if userInput:
             self.shooterMain.set(6300)
-
+    '''
     def rampShooterDown(userInput):
         if abs(userInput)>.5:
             self.shooterMain.set(5700)
@@ -231,5 +232,5 @@ class opControl(Component):
             self.toggleIntake(aButton)
         self.fire(rightTrigger)
         self.climb(climberStick)
-        self.rampShooterUp(leftBumper)
-        self.rampShooterDown(leftTrigger)
+        #self.rampShooterUp(leftBumper)
+        #self.rampShooterDown(leftTrigger)

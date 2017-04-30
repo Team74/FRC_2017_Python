@@ -11,7 +11,7 @@ class leftSideAuton(BaseSideGearAuton):
         return -0.8
 
     def getTargetDistance(self):
-        return 134/2.25
+        return 101/2.25
 
     def getSpeed(self):
         return  -0.35

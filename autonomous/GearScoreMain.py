@@ -14,7 +14,7 @@ class gearScoreCenter(BaseSideGearAuton):
         return 120
 
     def getSpeed(self):
-        return -0.2
+        return -0.25
 
     def getOffset(self):
         return -0.47

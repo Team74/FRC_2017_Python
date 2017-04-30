@@ -74,7 +74,7 @@ class BaseSideGearAuton(StatefulAutonomous):
 
     @state()
     def turn(self):
-        if(self.drive.turnAngle(self.getTurnAngle(), .25)):
+        if(self.drive.turnAngle(self.getTurnAngle(), .3)):
             self.next_state('drive_forward_2')
             #self.drive.zeroGyro()
                #lineUp
