@@ -98,7 +98,7 @@ class MyRobot(wpilib.SampleRobot):
                         elif self.controller.getLeftBumper():
                             self.drive.driveWithoutGyro(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))
                         else:
-                            self.drive.drive(self.scaleInput(self.controller.getLeftX()), self.scaleInput(self.controller.getLeftY()),self.scaleInput(self.controller.getRightX()))
+                            self.drive.drive(self.scaleInput(self.controller.getLeftX()/2), self.scaleInput(self.controller.getLeftY()/2),self.scaleInput(self.controller.getRightX()/2))#Halved raw data from controllers
                             #[cont.] the drive functions file. It also wraps the values with the scaleInput method which puts the input on an exponential curve, which gives the driver both fine-tuned control and power if you need it
             if(self.controller.getButtonX() == True):#This just allows the driver to zero the gyro out. It drifts between 30 and 60 degrees on every 360 degree rotation. It's  a hardare problem so this is the best we can  do
                 self.drive.zeroGyro()
