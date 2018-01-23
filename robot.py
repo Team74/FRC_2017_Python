@@ -54,6 +54,7 @@ class MyRobot(wpilib.SampleRobot):
         self.drive.reset()
         while self.isAutonomous() and self.isEnabled():
             self.autonomous_modes.run()
+            gameData=DriverStation.getInstance().getGameSpecificMessage()
             '''
             if self.drive.getDistance() < 120:
                 self.drive.autonTankDrive(-0.2, -0.2)
